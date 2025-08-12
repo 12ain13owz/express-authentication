@@ -1,0 +1,135 @@
+type: object
+properties:
+  required:
+    - status
+    - message
+    - timestamp
+  status:
+    type: integer
+    description: HTTP status code of the error
+    example: 400
+  message:
+    type: string
+    description: A human-readable message describing the error
+    example: Test error function
+  timestamp:
+    type: string
+    format: date-time
+    description: The time when the error occurred in ISO 8601 format
+    example: 2025-05-29T07:28:04.886Z
+  details:
+    type: object
+    description: Additional error details (only included in development mode)
+    nullable: true
+    properties:
+      required:
+        - name
+        - message
+        - stack
+        - status
+        - severity
+        - functionName
+        - additionalData
+        - requestContext
+      name:
+        type: string
+        description: The name of the error class
+        example: AppError
+      message:
+        type: string
+        description: The error message
+        example: Test error function
+      stack:
+        type: string
+        description: The stack trace of the error
+        example: |
+          AppError: Test error function
+              at error (D:\Src\Project\nodejs-template\src\controllers\health.controller.ts:16:11)
+              at Layer.handleRequest (D:\Src\Project\nodejs-template\node_modules\router\lib\layer.js:152:17)
+      status:
+        type: integer
+        description: HTTP status code of the error
+        example: 400
+      severity:
+        type: string
+        description: The severity level of the error
+        example: LOW
+      functionName:
+        type: string
+        description: The name of the function where the error occurred
+        example: healthController.error
+      additionalData:
+        type: object
+        description: Additional data related to the error
+        nullable: true
+        properties:
+          userId:
+            type: integer
+            description: The ID of the user associated with the request
+            example: 1
+          name:
+            type: string
+            description: The name of the user
+            example: John Doe
+          active:
+            type: boolean
+            description: Whether the user is active
+            example: false
+          items:
+            type: array
+            description: A list of items associated with the error
+            items:
+              anyOf:
+                - type: string
+                - type: number
+                - type: boolean
+                - type: null
+            example: ['1', 2, true, null]
+          description:
+            type: string
+            description: Additional description of the error
+            nullable: true
+            example: null
+          email:
+            type: string
+            description: The email associated with the request
+            nullable: true
+            example: null
+          createdAt:
+            type: string
+            format: date-time
+            description: The creation timestamp in ISO 8601 format
+            example: 2025-05-29T07:28:04.886Z
+      requestContext:
+        type: object
+        description: Details about the HTTP request that caused the error
+        properties:
+          method:
+            type: string
+            description: The HTTP method of the request
+            example: GET
+          url:
+            type: string
+            description: The URL of the request
+            example: /health/error
+          baseUrl:
+            type: string
+            description: The base URL of the request
+            example: ''
+          path:
+            type: string
+            description: The path of the request
+            example: /health/error
+          body:
+            type: object
+            description: The request body
+            nullable: true
+            example: null
+          params:
+            type: object
+            description: The URL parameters
+            example: {}
+          query:
+            type: object
+            description: The query parameters
+            example: {}

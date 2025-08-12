@@ -1,0 +1,6 @@
+get:
+  summary: Health check
+  operationId: healthCheck
+  responses:
+    '200':
+      $ref: '../../components/responses/success.response.yaml'

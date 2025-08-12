@@ -1,2 +1,1 @@
-# nodejs-express-authentication
-
+# Authentication with Node.js + Express
