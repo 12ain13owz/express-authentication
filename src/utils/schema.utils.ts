@@ -43,18 +43,18 @@ export const passwordSchema = (field: string): ZodString =>
 
 export const passwordConfirmation = <T extends Record<string, unknown>>(
   schema: ZodType<T>,
-  passwordKey: keyof T = 'password',
-  confirmPasswordKey: keyof T = 'confirmPassword'
+  primaryKey: keyof T = 'password',
+  secondaryKey: keyof T = 'confirmPassword'
 ) => {
   return schema.refine(
     (data) => {
-      const password = data[passwordKey as string]
-      const confirmPassword = data[confirmPasswordKey as string]
+      const password = data[primaryKey as string]
+      const confirmPassword = data[secondaryKey as string]
       return password === confirmPassword
     },
     {
       message: MESSAGES.ERROR.PASSWORD_NOT_MATCH,
-      path: [confirmPasswordKey as string],
+      path: [secondaryKey as string],
     }
   )
 }
