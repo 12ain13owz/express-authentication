@@ -2,15 +2,14 @@ import { NextFunction, Request, Response } from 'express'
 
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
-import { AppError } from '@/utils/error-handling.util'
+import { AppError } from '@/utils/error-handling.utils'
+import { createResponse } from '@/utils/response.utils'
 
 export const healthController = {
   success: (_req: Request, res: Response, next: NextFunction): void => {
     try {
-      res.status(HttpStatus.OK).json({
-        message: MESSAGES.SUCCESS.OK,
-        timestamp: new Date().toISOString(),
-      })
+      const response = createResponse(MESSAGES.SUCCESS.OK)
+      res.status(HttpStatus.OK).json(response)
     } catch (error) {
       next(error)
     }

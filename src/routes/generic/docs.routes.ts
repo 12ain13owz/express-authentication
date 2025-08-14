@@ -8,4 +8,4 @@ router.get('/', (_req, res) => {
   res.sendFile(htmlPath)
 })
 
-export default router
+export const docsRouter = router

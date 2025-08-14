@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env */
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, InternalError } from '@/constants/message.constant'
-import { AppError, ErrorLogger } from '@/utils/error-handling.util'
+import { AppError, ErrorLogger } from '@/utils/error-handling.utils'
 
 import { envSchema, EnvSchema } from './env.schema'
 

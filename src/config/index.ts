@@ -1,4 +1,4 @@
-import type { AppConfig } from '@/types/config.type'
+import { AppConfig } from '@/types/generic.type'
 
 import { loadEnvFile } from './env-loader'
 import { validateEnv } from './validate-env'

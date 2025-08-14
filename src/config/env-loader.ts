@@ -6,8 +6,8 @@ import path from 'path'
 import { NodeEnv, EnvFile } from '@/constants/env.constant'
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
-import { AppError, ErrorLogger } from '@/utils/error-handling.util'
-import { logger } from '@/utils/logger.util'
+import { AppError, ErrorLogger } from '@/utils/error-handling.utils'
+import { logger } from '@/utils/logger.utils'
 
 export function loadEnvFile(): void {
   const nodeEnv = (process.env.NODE_ENV as NodeEnv | undefined) || NodeEnv.DEVELOPMENT
