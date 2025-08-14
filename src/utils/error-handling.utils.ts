@@ -1,13 +1,10 @@
 import { Request } from 'express'
 
-import {
-  ErrorSeverity,
-  LogLevel,
-  LogSeverity,
-} from '@/constants/logger.constant'
+import { ErrorSeverity, LogLevel, LogSeverity } from '@/constants/logger.constant'
+import { InternalError } from '@/constants/message.constant'
 import { ErrorContext } from '@/types/error.type'
 
-import { logger } from './logger.util'
+import { logger } from './logger.utils'
 
 export class AppError extends Error {
   constructor(
@@ -37,10 +34,7 @@ export class AppError extends Error {
 }
 
 export class ErrorLogger {
-  private static formatErrorLog(
-    error: AppError | Error,
-    additionalData?: Record<string, unknown>
-  ) {
+  private static formatErrorLog(error: AppError | Error, additionalData?: Record<string, unknown>) {
     const baseLog = {
       name: error.name,
       message: error.message,
@@ -64,10 +58,7 @@ export class ErrorLogger {
     }
   }
 
-  static log(
-    error: AppError | Error,
-    additionalContext?: Partial<ErrorContext>
-  ) {
+  static log(error: AppError | Error, additionalContext?: Partial<ErrorContext>) {
     const errorLog = this.formatErrorLog(error, additionalContext)
     const level: LogLevel =
       error instanceof AppError && error.severity
@@ -139,4 +130,23 @@ export class ErrorFactory {
       additionalData,
     })
   }
+}
+
+export const logErrorWithContext = (
+  error: AppError | Error,
+  req: Request,
+  defaultFunctionName: string = InternalError.UNKNOWN_FUNCTION
+): void => {
+  ErrorLogger.log(error, {
+    functionName: error instanceof AppError ? error.context?.functionName : defaultFunctionName,
+    requestContext: {
+      method: req.method,
+      url: req.url,
+      baseUrl: req.baseUrl,
+      path: req.path,
+      body: req.body as Record<string, unknown>,
+      params: req.params,
+      query: req.query,
+    },
+  })
 }
