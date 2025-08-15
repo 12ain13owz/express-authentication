@@ -5,6 +5,10 @@ import { prisma } from '@/utils/prisma.utils'
 export class UserRepository {
   constructor(private readonly userModel: PrismaClient['user'] = prisma.user) {}
 
+  async findUserById(id: number): Promise<User | null> {
+    return this.userModel.findFirst({ where: { id } })
+  }
+
   async findUserByEmail(email: string): Promise<User | null> {
     return this.userModel.findFirst({ where: { email } })
   }

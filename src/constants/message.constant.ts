@@ -45,12 +45,18 @@ export const MESSAGES = {
     upload: (name: string) => `Uploaded ${name} successfully`,
   },
   ERROR: {
+    EMAIL_PASSWORD_INVALID: 'Email or password is invalid',
     PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters long',
     PASSWORD_UPPERCASE: 'Password must contain at least one uppercase letter',
     PASSWORD_LOWERCASE: 'Password must contain at least one lowercase letter',
     PASSWORD_NUMBER: 'Password must contain at least one number',
     PASSWORD_SPECIAL_CHAR: 'Password must contain at least one special character',
     PASSWORD_NOT_MATCH: 'Passwords do not match',
+
+    TOKEN_EXPIRED: 'Token is expired',
+    TOKEN_INVALID_SIGNATURE: 'Token is invalid signature',
+    TOKEN_NOT_FOUND_REVOKED: 'Token not found or revoked',
+    TOKEN_VERIFICATION_FAILED: 'Token verification failed',
 
     VALIDATION_ERROR: 'An unexpected error occurred during request validation',
     BAD_REQUEST: 'Bad request',

@@ -5,7 +5,7 @@ import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
 import { AppError } from '@/utils/error-handling.utils'
 
-export const validate =
+export const validateSchema =
   (schema: z.ZodObject) =>
   (req: Request<object>, _res: Response, next: NextFunction): void => {
     try {

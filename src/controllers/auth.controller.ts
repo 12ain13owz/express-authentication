@@ -11,8 +11,8 @@ export const registerController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const newUser = await userService.registerUser(req.body)
-    const response = createResponse(MESSAGES.SUCCESS.REGISTER, newUser)
+    const result = await userService.register(req.body)
+    const response = createResponse(MESSAGES.SUCCESS.REGISTER, result)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -25,7 +25,36 @@ export const loginController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const response = createResponse(MESSAGES.SUCCESS.LOGGED_IN)
+    const result = await userService.login(req.body)
+    const response = createResponse(MESSAGES.SUCCESS.LOGGED_IN, result)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const loginWithTokenController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const result = await userService.loginWithToken(req.user?.id)
+    const response = createResponse(MESSAGES.SUCCESS.LOGGED_IN, result)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const refreshTokenController = async (
+  req: Request<object, object, AuthTypes.RefreshTokenBody>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const result = await userService.refreshAccessToken(req.body.refreshToken)
+    const response = createResponse(MESSAGES.SUCCESS.LOGGED_IN, result)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)

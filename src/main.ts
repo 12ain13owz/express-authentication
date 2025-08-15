@@ -22,16 +22,15 @@ app.use('/docs', express.static(path.join(__dirname, '../docs')))
 app.use(mainRoutes)
 app.use(errorHandler)
 
-const main = async () => {
-  try {
-    const isDbConnected = await DatabaseClient.healthCheck()
-    if (!isDbConnected) throw new Error(DATABASE.CONNECTION.FAILED)
+app.listen(port, () => {
+  DatabaseClient.healthCheck()
+    .then((isDbConnected) => {
+      if (!isDbConnected) throw new Error(DATABASE.CONNECTION.FAILED)
 
-    logger.info(MESSAGES.GENERIC.serverListening(port))
-  } catch (error) {
-    logger.error(error)
-    process.exit(1)
-  }
-}
-
-void main().then(() => app.listen(port))
+      logger.info(MESSAGES.GENERIC.serverListening(port))
+    })
+    .catch((error) => {
+      logger.error(error)
+      process.exit(1)
+    })
+})

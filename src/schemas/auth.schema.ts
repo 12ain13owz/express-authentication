@@ -18,7 +18,7 @@ const loginBodySchema = z.object({
   email: invalidEmail('Email'),
   password: requriedString('Password'),
 })
-const loginWithTokanBodySchema = z.object({ token: requriedString('Token') })
+const refreshTokenBodySchema = z.object({ refreshToken: requriedString('Token') })
 const forgotPasswordBodySchema = z.object({ email: invalidEmail('Email') })
 const resetPasswordBodySchema = z.object({
   token: requriedString('Token'),
@@ -28,12 +28,12 @@ const resetPasswordBodySchema = z.object({
 
 export const registerSchema = z.object({ body: passwordConfirmation(registerBodySchema) })
 export const loginSchema = z.object({ body: loginBodySchema })
-export const loginWithTokenSchema = z.object({ body: loginWithTokanBodySchema })
+export const refresTokenhSchema = z.object({ body: refreshTokenBodySchema })
 export const forgotPasswordSchema = z.object({ body: forgotPasswordBodySchema })
 export const resetPasswordSchema = z.object({ body: passwordConfirmation(resetPasswordBodySchema) })
 
 export type RegisterBody = z.infer<typeof registerSchema>['body']
 export type LoginBody = z.infer<typeof loginSchema>['body']
-export type LoginWithTokenBody = z.infer<typeof loginWithTokenSchema>['body']
+export type RefreshTokenBody = z.infer<typeof refresTokenhSchema>['body']
 export type ForgotPasswordBody = z.infer<typeof forgotPasswordSchema>['body']
 export type ResetPasswordBody = z.infer<typeof resetPasswordSchema>['body']

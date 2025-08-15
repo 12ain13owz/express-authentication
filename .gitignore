@@ -3,4 +3,4 @@ dist/
 .env.development
 .env.production
 
-/src/generated/prisma
+/src/generated
