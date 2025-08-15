@@ -1,4 +1,3 @@
-// --- HTTP Status Codes ---
 export enum HttpStatus {
   OK = 200,
   CREATED = 201,
@@ -20,25 +19,21 @@ export enum HttpStatus {
   GATEWAY_TIMEOUT = 504,
 }
 
-// --- Internal Error Types ---
 export enum InternalError {
   UNKNOWN_ERROR = 'Unknown error',
   UNKNOWN_FUNCTION = 'Unknown function',
 }
 
-// --- Generic Application Messages ---
-export const GENERIC = {
-  serverListening: (port: number) =>
-    `Server listening at http://localhost:${port}`,
-} as const
-
-// --- API Response Messages ---
 export const MESSAGES = {
+  GENERIC: {
+    serverListening: (port: number) => `Server listening at http://localhost:${port}`,
+  },
   SUCCESS: {
     OK: 'Operation successful',
     CREATED: 'Data created successfully',
     UPDATED: 'Data updated successfully',
     DELETED: 'Data deleted successfully',
+    REGISTER: 'Registered successfully',
     LOGGED_IN: 'Logged in successfully',
     LOGGED_OUT: 'Logged out successfully',
     SAVED: 'Data saved successfully',
@@ -50,21 +45,29 @@ export const MESSAGES = {
     upload: (name: string) => `Uploaded ${name} successfully`,
   },
   ERROR: {
+    PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters long',
+    PASSWORD_UPPERCASE: 'Password must contain at least one uppercase letter',
+    PASSWORD_LOWERCASE: 'Password must contain at least one lowercase letter',
+    PASSWORD_NUMBER: 'Password must contain at least one number',
+    PASSWORD_SPECIAL_CHAR: 'Password must contain at least one special character',
+    PASSWORD_NOT_MATCH: 'Passwords do not match',
+
+    VALIDATION_ERROR: 'An unexpected error occurred during request validation',
     BAD_REQUEST: 'Bad request',
     UNAUTHORIZED: 'Unauthorized',
     FORBIDDEN: 'Forbidden',
     NOT_FOUND: 'Not found',
     INTERNAL_SERVER_ERROR: 'Internal server error',
     METHOD_NOT_ALLOWED: 'Method not allowed',
-    TOO_MANY_REQUESTS: 'Too many requests. Please try again later.',
+    TOO_MANY_REQUESTS: 'Too many requests. Please try again later',
     BAD_GATEWAY: 'Bad gateway',
 
     notFound: (item: string) => `${item} not found`,
     notFoundEnvFile: (envFile: string) => `Could not find ${envFile}`,
     alreadyExists: (item: string) => `${item} already exists`,
-    invalidField: (field: string) => `Invalid ${field}`,
+    invalidField: (field: string) => `Invalid ${field} format`,
+    invalidType: (field: string, type: string) => `${field} must be of type ${type}`,
     requiredField: (field: string) => `${field} is required`,
-    failedAction: (action: string, target: string) =>
-      `Failed to ${action} ${target}`,
+    failedAction: (action: string, target: string) => `Failed to ${action} ${target}`,
   },
-} as const
+}
