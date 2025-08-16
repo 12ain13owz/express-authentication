@@ -44,5 +44,6 @@ router.post(
   validateMiddleware.validateSchema(authSchema.resetPasswordSchema),
   authController.resetPasswordController
 )
+router.get('/profile', validateMiddleware.validateToken, authController.getProfileController)
 
 export const authRouter = router

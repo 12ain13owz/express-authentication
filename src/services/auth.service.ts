@@ -347,6 +347,33 @@ export class AuthService {
     }
   }
 
+  async getProfile(id?: number): Promise<UserResponse | void> {
+    try {
+      if (!id)
+        throw new AppError(
+          MESSAGES.ERROR.notFound('User'),
+          HttpStatus.BAD_REQUEST,
+          ErrorSeverity.LOW,
+          { functionName: 'getProfile' }
+        )
+
+      const existingUser = await this.userRepository.findUserById(id)
+      if (!existingUser) {
+        throw new AppError(
+          MESSAGES.ERROR.notFound('User'),
+          HttpStatus.NOT_FOUND,
+          ErrorSeverity.LOW,
+          { functionName: 'getProfile' }
+        )
+      }
+
+      return this.publicUser(existingUser)
+    } catch (error) {
+      const e = error as AppErrorType
+      this.handleError(e, 'getProfile', 'profile', 'account')
+    }
+  }
+
   private publicUser(user: User): UserResponse {
     const publicUser = {
       id: user.id,

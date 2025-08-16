@@ -13,7 +13,7 @@ export const registerController = async (
   try {
     const result = await authService.register(req.body)
     const response = createResponse(MESSAGES.SUCCESS.REGISTER, result)
-    res.status(HttpStatus.OK).json(response)
+    res.status(HttpStatus.CREATED).json(response)
   } catch (error) {
     next(error)
   }
@@ -139,6 +139,20 @@ export const resetPasswordController = async (
   try {
     await authService.resetPassword(req.body.token, req.body.password)
     const response = createResponse(MESSAGES.SUCCESS.PASSWORD_RESET)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getProfileController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const result = await authService.getProfile(req.user?.id)
+    const response = createResponse(MESSAGES.SUCCESS.OK, result)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
