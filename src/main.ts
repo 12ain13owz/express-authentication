@@ -1,13 +1,13 @@
 import cors from 'cors'
 import express from 'express'
 import morgan from 'morgan'
-import path from 'path'
+import path from 'node:path'
 
 import { config } from './config'
-import { DATABASE } from './constants/database.constant'
 import { MESSAGES } from './constants/message.constant'
 import { errorHandler } from './middlewares/error-response.middleware'
 import { mainRoutes } from './routes'
+import { mailerService } from './services/mailer.service'
 import { logger } from './utils/logger.utils'
 import { DatabaseClient } from './utils/prisma.utils'
 
@@ -24,11 +24,8 @@ app.use(errorHandler)
 
 app.listen(port, () => {
   DatabaseClient.healthCheck()
-    .then((isDbConnected) => {
-      if (!isDbConnected) throw new Error(DATABASE.CONNECTION.FAILED)
-
-      logger.info(MESSAGES.GENERIC.serverListening(port))
-    })
+    .then(() => mailerService.testConnection())
+    .then(() => logger.info(MESSAGES.GENERIC.serverListening(port)))
     .catch((error) => {
       logger.error(error)
       process.exit(1)

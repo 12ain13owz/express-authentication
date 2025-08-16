@@ -38,6 +38,9 @@ export const MESSAGES = {
     LOGGED_OUT: 'Logged out successfully',
     SAVED: 'Data saved successfully',
 
+    EMAIL_SENT: 'Email sent successfully',
+    EMAIL_VERIFIED: 'Email verified successfully',
+
     create: (name: string) => `Created ${name} successfully`,
     update: (name: string) => `Updated ${name} successfully`,
     delete: (name: string) => `Deleted ${name} successfully`,
@@ -46,6 +49,8 @@ export const MESSAGES = {
   },
   ERROR: {
     EMAIL_PASSWORD_INVALID: 'Email or password is invalid',
+    EMAIL_ALREADY_VERIFIED: 'Email is already verified',
+
     PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters long',
     PASSWORD_UPPERCASE: 'Password must contain at least one uppercase letter',
     PASSWORD_LOWERCASE: 'Password must contain at least one lowercase letter',
@@ -68,6 +73,8 @@ export const MESSAGES = {
     TOO_MANY_REQUESTS: 'Too many requests. Please try again later',
     BAD_GATEWAY: 'Bad gateway',
 
+    UNAUTHORIZED_ACCESS: 'Unauthorized access',
+
     notFound: (item: string) => `${item} not found`,
     notFoundEnvFile: (envFile: string) => `Could not find ${envFile}`,
     alreadyExists: (item: string) => `${item} already exists`,
@@ -75,5 +82,11 @@ export const MESSAGES = {
     invalidType: (field: string, type: string) => `${field} must be of type ${type}`,
     requiredField: (field: string) => `${field} is required`,
     failedAction: (action: string, target: string) => `Failed to ${action} ${target}`,
+  },
+
+  SMTP: {
+    CONNECTED: '[SMTP] ✅ connection successful',
+    FAILED: '[SMTP] ❌ connection failed',
+    DISCONNECTED: 'Disconnected from SMTP successfully',
   },
 }

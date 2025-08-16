@@ -5,11 +5,17 @@ import { NodeEnv } from '@/constants/env.constant'
 export type AppConfig = {
   port: number
   node_env: NodeEnv
+  baseUrl: string
   databaseUrl: string
   accessTokenKey: string
   accessTokenExpiresIn: SignOptions['expiresIn']
   refreshTokenKey: string
   refreshTokenExpiresIn: SignOptions['expiresIn']
+  smtpHost: string
+  smtpPort: number
+  smtpSecure: boolean
+  smtpUsername: string
+  smtpPassword: string
 }
 
 export interface AppResponse<T> {

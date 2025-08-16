@@ -13,6 +13,10 @@ export class UserRepository {
     return this.userModel.findFirst({ where: { email } })
   }
 
+  async findUserByEmailVerificationKey(emailVerificationKey: string): Promise<User | null> {
+    return this.userModel.findFirst({ where: { emailVerificationKey } })
+  }
+
   async createUser(data: CreateUser): Promise<User> {
     return this.userModel.create({ data })
   }

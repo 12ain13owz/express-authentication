@@ -23,17 +23,16 @@ export class DatabaseClient {
   }
 
   // ✅ Health Check Method
-  public static async healthCheck(): Promise<boolean> {
+  public static async healthCheck(): Promise<void> {
     try {
       const client = this.getInstance()
       await client.$queryRaw`SELECT 1`
       this.isConnected = true
       logger.info(DATABASE.CONNECTION.SUCCESS)
-      return true
     } catch (error) {
       this.isConnected = false
       logger.error([DATABASE.CONNECTION.FAILED, error])
-      return false
+      throw error
     }
   }
 
@@ -43,7 +42,7 @@ export class DatabaseClient {
   }
 
   // ✅ Reconnect if needed
-  public static async reconnect(): Promise<boolean> {
+  public static async reconnect(): Promise<void> {
     if (this.instance) {
       await this.disconnect()
       this.instance = new PrismaClient()

@@ -31,7 +31,7 @@ export function generateToken(user: User, tokenKey: TokenKey): string | AppError
   }
 }
 
-export function VerifyToken(token: string, tokenKey: TokenKey): JwtPayload | AppError {
+export function verifyToken(token: string, tokenKey: TokenKey): JwtPayload | AppError {
   try {
     const secretKey =
       tokenKey === TokenKey.ACCESS_TOKEN_KEY ? config.accessTokenKey : config.refreshTokenKey

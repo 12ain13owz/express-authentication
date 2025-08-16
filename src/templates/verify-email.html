@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify Your Email</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+          Cantarell, sans-serif;
+        background-color: #f8fafc;
+        color: #334155;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: white;
+      }
+
+      .header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .header p {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+
+      .content {
+        padding: 40px 30px;
+      }
+
+      .greeting {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #1e293b;
+      }
+
+      .message {
+        font-size: 16px;
+        margin-bottom: 30px;
+        color: #475569;
+      }
+
+      .verify-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        padding: 16px 32px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: transform 0.2s ease;
+        box-shadow: 0 4px 14px 0 rgba(102, 126, 234, 0.39);
+      }
+
+      .verify-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px 0 rgba(102, 126, 234, 0.49);
+      }
+
+      .btn-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+
+      .alternative {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f1f5f9;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+      }
+
+      .alternative h3 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #1e293b;
+      }
+
+      .alternative p {
+        font-size: 14px;
+        color: #64748b;
+        word-break: break-all;
+      }
+
+      .footer {
+        background-color: #f8fafc;
+        padding: 30px;
+        text-align: center;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .footer p {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 10px;
+      }
+
+      .social-links {
+        margin-top: 20px;
+      }
+
+      .social-links a {
+        display: inline-block;
+        margin: 0 10px;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      .expiration {
+        background-color: #fef3c7;
+        border-left: 4px solid #f59e0b;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 30px 0;
+      }
+
+      .expiration h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #92400e;
+        margin-bottom: 8px;
+      }
+
+      .expiration p {
+        font-size: 14px;
+        color: #92400e;
+        margin: 0;
+      }
+
+      .warning {
+        margin-top: 30px;
+        padding: 15px;
+        background-color: #fee2e2;
+        border-radius: 8px;
+        border-left: 4px solid #ef4444;
+      }
+
+      .warning p {
+        font-size: 14px;
+        color: #dc2626;
+        margin: 0;
+      }
+
+      @media only screen and (max-width: 600px) {
+        .container {
+          margin: 20px;
+          border-radius: 8px;
+        }
+
+        .header,
+        .content,
+        .footer {
+          padding: 30px 20px;
+        }
+
+        .header h1 {
+          font-size: 24px;
+        }
+
+        .verify-btn {
+          display: block;
+          text-align: center;
+          margin: 20px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div style="padding: 20px">
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to {{appName}}!</h1>
+          <p>Let's verify your email address</p>
+        </div>
+
+        <div class="content">
+          <div class="greeting"> Hi {{username}}, </div>
+
+          <div class="message">
+            Thank you for creating an account with {{appName}}! To complete your registration and
+            start using all our features, please verify your email address by clicking the button
+            below.
+          </div>
+
+          <div class="btn-container">
+            <a href="{{verificationLink}}" class="verify-btn"> Verify Email Address </a>
+          </div>
+
+          <div class="alternative">
+            <h3>Having trouble with the button?</h3>
+            <p>Copy and paste this link into your browser:</p>
+            <p>{{verificationLink}}</p>
+          </div>
+
+          <div class="expiration">
+            <h3>⏱️ Time Sensitive</h3>
+            <p
+              >This verification link will expire in {{expirationTime}}. After that, you'll need to
+              request a new verification email.</p
+            >
+          </div>
+
+          <div class="warning">
+            <p
+              ><strong>Security Notice:</strong> If you didn't create an account with {{appName}},
+              you can safely ignore this email.</p
+            >
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>This email was sent by {{appName}}</p>
+          <p>If you have any questions, please don't hesitate to contact our support team.</p>
+
+          <div class="social-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact Support</a>
+          </div>
+
+          <p style="margin-top: 20px; font-size: 12px; color: #94a3b8">
+            © {{currentYear}} {{appName}}. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

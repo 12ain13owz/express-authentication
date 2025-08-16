@@ -15,17 +15,27 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String
-  password String
-  firstName String
-  lastName String
-  role Role @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                        Int       @id @default(autoincrement())
+  email                     String    @unique
+  password                  String
+  firstName                 String    @db.VarChar(100)
+  lastName                  String    @db.VarChar(100)
+  role                      Role[]    @default([USER])
+  isVerified                Boolean   @default(false)
+  emailVerificationKey      String?   @unique
+  emailVerificationExpiry   DateTime?
+  resetPasswordKey          String?   @unique
+  resetPasswordExpiry       DateTime?
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  @@index([email])
+  @@index([emailVerificationKey])
+  @@index([resetPasswordKey])
 }
 
 enum Role {
   ADMIN
   USER
+  MODERATOR
 }

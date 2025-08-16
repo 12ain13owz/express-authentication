@@ -1,23 +1,32 @@
 import { Router } from 'express'
 
 import * as authController from '@/controllers/auth.controller'
-import { authMiddleware } from '@/middlewares/auth.middleware'
-import { validateSchema } from '@/middlewares/validate.middleware'
+import * as validateMiddleware from '@/middlewares/validate.middleware'
 import * as authSchema from '@/schemas/auth.schema'
 
 const router = Router()
 
 router.post(
   '/register',
-  validateSchema(authSchema.registerSchema),
+  validateMiddleware.validateSchema(authSchema.registerSchema),
   authController.registerController
 )
 router.post('/login', authController.loginController)
-router.post('/login/me', authMiddleware, authController.loginWithTokenController)
+router.post('/login/me', validateMiddleware.validateToken, authController.loginWithTokenController)
 router.post(
   '/refresh-token',
-  validateSchema(authSchema.refresTokenhSchema),
+  validateMiddleware.validateSchema(authSchema.refresTokenhSchema),
   authController.refreshTokenController
+)
+router.get(
+  '/verify-email/:emailVerificationKey',
+  validateMiddleware.validateSchema(authSchema.verifyEmailSchema),
+  authController.verifyEmailController
+)
+router.post(
+  '/send-verification',
+  validateMiddleware.validateSchema(authSchema.sendVerifyEmailSchema),
+  authController.sendVerifyEmailController
 )
 
 export const authRouter = router

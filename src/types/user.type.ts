@@ -1,8 +1,18 @@
 import { User } from '@/generated/prisma'
 
-export type CreateUser = Pick<User, 'email' | 'password' | 'firstName' | 'lastName'>
+export type CreateUser = Omit<
+  User,
+  'id' | 'isVerified' | 'resetPasswordKey' | 'resetPasswordExpiry' | 'createdAt' | 'updatedAt'
+>
 export type UpdateUser = Partial<User>
-export type UserResponse = Omit<User, 'password'>
+export type UserResponse = Omit<
+  User,
+  | 'password'
+  | 'emailVerificationKey'
+  | 'emailVerificationExpiry'
+  | 'resetPasswordKey'
+  | 'resetPasswordExpiry'
+>
 export interface UserResponseWithToken {
   user: UserResponse
   accessToken?: string

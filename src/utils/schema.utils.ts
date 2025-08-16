@@ -8,19 +8,21 @@ import {
   ZodDate,
   ZodEmail,
   ZodNumber,
+  ZodPipe,
   ZodString,
+  ZodTransform,
   ZodType,
 } from 'zod'
 
 import { MESSAGES } from '@/constants/message.constant'
 
-export const invalidEmail = (field: string): ZodEmail =>
+export const invalidEmail = (field: string): ZodPipe<ZodEmail, ZodTransform<string, string>> =>
   email({
     error: (issue) =>
       issue.input === undefined
         ? MESSAGES.ERROR.requiredField(field)
         : MESSAGES.ERROR.invalidField(field),
-  })
+  }).transform((email) => email.toLowerCase())
 
 export const requriedString = (field: string): ZodString =>
   string({

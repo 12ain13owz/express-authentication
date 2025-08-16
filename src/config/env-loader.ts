@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env */
 import dotenv from 'dotenv'
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 import { NodeEnv, EnvFile } from '@/constants/env.constant'
 import { ErrorSeverity } from '@/constants/logger.constant'

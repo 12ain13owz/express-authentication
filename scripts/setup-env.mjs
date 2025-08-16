@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import chalk from 'chalk'
 import { fileURLToPath } from 'url'
 
@@ -18,11 +18,7 @@ function createEnvFile(sourcePath, targetPath, envName, replace = {}) {
   // Check if the target file already exists
   if (fs.existsSync(targetPath)) {
     console.log(
-      chalk.yellow(
-        `Warning: ${path.basename(
-          targetPath
-        )} already exists. Skipping creation.`
-      )
+      chalk.yellow(`Warning: ${path.basename(targetPath)} already exists. Skipping creation.`)
     )
     return false
   }
@@ -67,13 +63,9 @@ function setupEnv() {
         '\nPlease edit .env.development and .env.production with your configuration values.'
       )
     )
-    console.log(
-      chalk.cyan('You can use any text editor (e.g., nano, vim, or VS Code).')
-    )
+    console.log(chalk.cyan('You can use any text editor (e.g., nano, vim, or VS Code).'))
   } catch (error) {
-    console.error(
-      chalk.red(`Error: Failed to create .env files: ${error.message}`)
-    )
+    console.error(chalk.red(`Error: Failed to create .env files: ${error.message}`))
     process.exit(1)
   }
 }
