@@ -27,6 +27,8 @@ export enum InternalError {
 export const MESSAGES = {
   GENERIC: {
     serverListening: (port: number) => `Server listening at http://localhost:${port}`,
+    SEND_VERIFICATION_EMAIL: 'Please verify your email address',
+    SEND_RESET_PASSWORD_EMAIL: 'Please reset your password',
   },
   SUCCESS: {
     OK: 'Operation successful',
@@ -37,6 +39,7 @@ export const MESSAGES = {
     LOGGED_IN: 'Logged in successfully',
     LOGGED_OUT: 'Logged out successfully',
     SAVED: 'Data saved successfully',
+    PASSWORD_RESET: 'Password reset successfully',
 
     EMAIL_SENT: 'Email sent successfully',
     EMAIL_VERIFIED: 'Email verified successfully',
@@ -50,6 +53,7 @@ export const MESSAGES = {
   ERROR: {
     EMAIL_PASSWORD_INVALID: 'Email or password is invalid',
     EMAIL_ALREADY_VERIFIED: 'Email is already verified',
+    EMAIL_VERIFICATION_EXPIRED: 'Email verification link is expired',
 
     PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters long',
     PASSWORD_UPPERCASE: 'Password must contain at least one uppercase letter',
@@ -57,6 +61,7 @@ export const MESSAGES = {
     PASSWORD_NUMBER: 'Password must contain at least one number',
     PASSWORD_SPECIAL_CHAR: 'Password must contain at least one special character',
     PASSWORD_NOT_MATCH: 'Passwords do not match',
+    PASSWORD_RESET_EXPIRED: 'Password reset link is expired',
 
     TOKEN_EXPIRED: 'Token is expired',
     TOKEN_INVALID_SIGNATURE: 'Token is invalid signature',

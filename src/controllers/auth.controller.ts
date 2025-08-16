@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
 import * as AuthTypes from '@/schemas/auth.schema'
 import { authService } from '@/services/auth.service'
-import { createResponse } from '@/utils/response.utils'
+import { createResponse } from '@/utils/generic.utils'
 
 export const registerController = async (
   req: Request<object, object, AuthTypes.RegisterBody>,
@@ -83,6 +83,34 @@ export const sendVerifyEmailController = async (
   try {
     await authService.sendVerificationEmail(req.body.email)
     const response = createResponse(MESSAGES.SUCCESS.EMAIL_SENT)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const forgotPasswordController = async (
+  req: Request<object, object, AuthTypes.ForgotPasswordBody>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await authService.forgotPassword(req.body.email)
+    const response = createResponse(MESSAGES.SUCCESS.EMAIL_SENT)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const resetPasswordController = async (
+  req: Request<object, object, AuthTypes.ResetPasswordBody>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await authService.resetPassword(req.body.token, req.body.password)
+    const response = createResponse(MESSAGES.SUCCESS.PASSWORD_RESET)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)

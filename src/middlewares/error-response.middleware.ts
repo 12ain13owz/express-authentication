@@ -4,8 +4,8 @@ import { config } from '@/config'
 import { NodeEnv } from '@/constants/env.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
 import { AppError, logErrorWithContext } from '@/utils/error-handling.utils'
+import { createResponse } from '@/utils/generic.utils'
 import { logger } from '@/utils/logger.utils'
-import { createResponse } from '@/utils/response.utils'
 
 export const errorHandler = async (
   error: AppError | Error,

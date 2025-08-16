@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
 import { AppError } from '@/utils/error-handling.utils'
-import { createResponse } from '@/utils/response.utils'
+import { createResponse } from '@/utils/generic.utils'
 
 export const successController = async (
   _req: Request,

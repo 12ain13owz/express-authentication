@@ -17,6 +17,10 @@ export class UserRepository {
     return this.userModel.findFirst({ where: { emailVerificationKey } })
   }
 
+  async findUserByResetPasswordKey(resetPasswordKey: string): Promise<User | null> {
+    return this.userModel.findFirst({ where: { resetPasswordKey } })
+  }
+
   async createUser(data: CreateUser): Promise<User> {
     return this.userModel.create({ data })
   }

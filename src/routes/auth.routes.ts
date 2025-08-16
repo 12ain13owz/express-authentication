@@ -28,5 +28,15 @@ router.post(
   validateMiddleware.validateSchema(authSchema.sendVerifyEmailSchema),
   authController.sendVerifyEmailController
 )
+router.post(
+  '/forgot-password',
+  validateMiddleware.validateSchema(authSchema.forgotPasswordSchema),
+  authController.forgotPasswordController
+)
+router.post(
+  '/reset-password',
+  validateMiddleware.validateSchema(authSchema.resetPasswordSchema),
+  authController.resetPasswordController
+)
 
 export const authRouter = router

@@ -6,9 +6,9 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport'
 
 import { config } from '@/config'
 import { NodeEnv } from '@/constants/env.constant'
-import { APP_NAME } from '@/constants/generic.constant'
+import { APP_NAME, TemplateHtml } from '@/constants/generic.constant'
 import { MESSAGES } from '@/constants/message.constant'
-import { MailOptions, VerifyEmailData } from '@/types/mailer.type'
+import { MailOptions, ResetPasswordData, VerifyEmailData } from '@/types/mailer.type'
 import { logger } from '@/utils/logger.utils'
 
 export class MailerService {
@@ -26,7 +26,7 @@ export class MailerService {
     })
   }
 
-  private loadTemplate(templateName: string): string {
+  private loadTemplate(templateName: TemplateHtml): string {
     const templatePath = join(process.cwd(), 'src', 'templates', `${templateName}.html`)
     return readFileSync(templatePath, 'utf-8')
   }
@@ -55,7 +55,7 @@ export class MailerService {
   }
 
   async sendVerificationEmail(to: string, data: VerifyEmailData): Promise<void> {
-    const template = this.loadTemplate('verify-email')
+    const template = this.loadTemplate(TemplateHtml.VERIFY_EMAIL)
     const html = this.replaceTemplateVariables(template, {
       username: data.username,
       verificationLink: data.verificationLink,
@@ -64,7 +64,20 @@ export class MailerService {
       currentYear: new Date().getFullYear().toString(),
     })
 
-    await this.sendEmail({ to, subject: 'Please verify your email address', html })
+    await this.sendEmail({ to, subject: MESSAGES.GENERIC.SEND_VERIFICATION_EMAIL, html })
+  }
+
+  async sendPasswordResetEmail(to: string, data: ResetPasswordData): Promise<void> {
+    const template = this.loadTemplate(TemplateHtml.RESET_PASSWORD)
+    const html = this.replaceTemplateVariables(template, {
+      username: data.username,
+      resetLink: data.resetLink,
+      appName: data.appName || APP_NAME,
+      expirationTime: data.expirationTime || '60 minutes',
+      currentYear: new Date().getFullYear().toString(),
+    })
+
+    await this.sendEmail({ to, subject: MESSAGES.GENERIC.SEND_VERIFICATION_EMAIL, html })
   }
 
   async testConnection(): Promise<void> {
