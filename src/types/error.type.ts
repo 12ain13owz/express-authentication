@@ -1,3 +1,7 @@
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+
+import { AppError } from '@/utils/error-handling.utils'
+
 export type RequestContext = {
   method: string
   url: string
@@ -13,3 +17,5 @@ export type ErrorContext = {
   requestContext?: RequestContext
   additionalData?: Record<string, unknown>
 }
+
+export type AppErrorType = AppError | Error | PrismaClientKnownRequestError

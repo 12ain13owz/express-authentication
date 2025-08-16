@@ -1,4 +1,5 @@
-import { Prisma, Role, User } from '@prisma/client'
+import { Role, User } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { compare, hash } from 'bcrypt'
 
 import { config } from '@/config'
@@ -7,6 +8,7 @@ import { TokenKey } from '@/constants/jwt.constant'
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
 import { LoginBody, RegisterBody } from '@/schemas/auth.schema'
+import { AppErrorType } from '@/types/error.type'
 import { UserResponse, UserResponseWithToken } from '@/types/user.type'
 import { AppError } from '@/utils/error-handling.utils'
 import { generateVerifyKey, getVerifyExpiry, isVerificationExpired } from '@/utils/generic.utils'
@@ -23,7 +25,7 @@ export class AuthService {
     private readonly mailerService: MailerService
   ) {}
 
-  async register(body: RegisterBody): Promise<UserResponse> {
+  async register(body: RegisterBody): Promise<UserResponse | void> {
     try {
       const { email, password, firstName, lastName } = body
       const existingUser = await this.userRepository.findUserByEmail(email)
@@ -58,23 +60,12 @@ export class AuthService {
 
       return this.publicUser(newUser)
     } catch (error) {
-      if (error instanceof AppError) throw error
-      if (error instanceof Prisma.PrismaClientKnownRequestError)
-        throw new AppError(
-          MESSAGES.ERROR.failedAction('register', 'account'),
-          HttpStatus.BAD_REQUEST,
-          ErrorSeverity.LOW,
-          { functionName: 'register' }
-        )
-
-      const e = error as Error
-      throw new AppError(e.message, HttpStatus.UNPROCESSABLE_ENTITY, ErrorSeverity.MEDIUM, {
-        functionName: 'register',
-      })
+      const e = error as AppErrorType
+      this.handleError(e, 'register', 'register', 'account')
     }
   }
 
-  async login(body: LoginBody): Promise<UserResponseWithToken> {
+  async login(body: LoginBody): Promise<UserResponseWithToken | void> {
     try {
       const { email, password } = body
       const existingUser = await this.userRepository.findUserByEmail(email)
@@ -104,23 +95,12 @@ export class AuthService {
       const publicUser = this.publicUser(existingUser)
       return { user: publicUser, accessToken, refreshToken }
     } catch (error) {
-      if (error instanceof AppError) throw error
-      if (error instanceof Prisma.PrismaClientKnownRequestError)
-        throw new AppError(
-          MESSAGES.ERROR.failedAction('login', 'account'),
-          HttpStatus.BAD_REQUEST,
-          ErrorSeverity.LOW,
-          { functionName: 'login' }
-        )
-
-      const e = error as Error
-      throw new AppError(e.message, HttpStatus.UNPROCESSABLE_ENTITY, ErrorSeverity.MEDIUM, {
-        functionName: 'login',
-      })
+      const e = error as AppErrorType
+      this.handleError(e, 'login', 'login', 'account')
     }
   }
 
-  async loginWithToken(id?: number): Promise<UserResponseWithToken> {
+  async loginWithToken(id?: number): Promise<UserResponseWithToken | void> {
     try {
       if (!id)
         throw new AppError(
@@ -146,23 +126,12 @@ export class AuthService {
       const userWithoutPassword = this.publicUser(existingUser)
       return { user: userWithoutPassword, accessToken: newAccessToken }
     } catch (error) {
-      if (error instanceof AppError) throw error
-      if (error instanceof Prisma.PrismaClientKnownRequestError)
-        throw new AppError(
-          MESSAGES.ERROR.failedAction('login', 'account'),
-          HttpStatus.BAD_REQUEST,
-          ErrorSeverity.LOW,
-          { functionName: 'loginWithToken' }
-        )
-
-      const e = error as Error
-      throw new AppError(e.message, HttpStatus.UNPROCESSABLE_ENTITY, ErrorSeverity.MEDIUM, {
-        functionName: 'loginWithToken',
-      })
+      const e = error as AppErrorType
+      this.handleError(e, 'loginWithToken', 'login', 'account')
     }
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<UserResponseWithToken> {
+  async refreshAccessToken(refreshToken: string): Promise<UserResponseWithToken | void> {
     try {
       const decodedToken = verifyToken(refreshToken, TokenKey.REFRESH_TOKEN_KEY)
       if (decodedToken instanceof AppError) throw decodedToken
@@ -186,19 +155,8 @@ export class AuthService {
       const publicUser = this.publicUser(existingUser)
       return { user: publicUser, accessToken: newAccessToken, refreshToken: newRefreshToken }
     } catch (error) {
-      if (error instanceof AppError) throw error
-      if (error instanceof Prisma.PrismaClientKnownRequestError)
-        throw new AppError(
-          MESSAGES.ERROR.failedAction('login', 'account'),
-          HttpStatus.BAD_REQUEST,
-          ErrorSeverity.LOW,
-          { functionName: 'refreshAccessToken' }
-        )
-
-      const e = error as Error
-      throw new AppError(e.message, HttpStatus.UNPROCESSABLE_ENTITY, ErrorSeverity.MEDIUM, {
-        functionName: 'refreshAccessToken',
-      })
+      const e = error as AppErrorType
+      this.handleError(e, 'refreshAccessToken', 'login', 'account')
     }
   }
 
@@ -239,19 +197,8 @@ export class AuthService {
         emailVerificationExpiry: null,
       })
     } catch (error) {
-      if (error instanceof AppError) throw error
-      if (error instanceof Prisma.PrismaClientKnownRequestError)
-        throw new AppError(
-          MESSAGES.ERROR.failedAction('verify', 'email'),
-          HttpStatus.BAD_REQUEST,
-          ErrorSeverity.LOW,
-          { functionName: 'verifyEmail' }
-        )
-
-      const e = error as Error
-      throw new AppError(e.message, HttpStatus.UNPROCESSABLE_ENTITY, ErrorSeverity.MEDIUM, {
-        functionName: 'verifyEmail',
-      })
+      const e = error as AppErrorType
+      this.handleError(e, 'verifyEmail', 'verify', 'email')
     }
   }
 
@@ -290,19 +237,8 @@ export class AuthService {
         expirationTime: '60 minutes',
       })
     } catch (error) {
-      if (error instanceof AppError) throw error
-      if (error instanceof Prisma.PrismaClientKnownRequestError)
-        throw new AppError(
-          MESSAGES.ERROR.failedAction('send', 'email verification'),
-          HttpStatus.BAD_REQUEST,
-          ErrorSeverity.LOW,
-          { functionName: 'sendVerificationEmail' }
-        )
-
-      const e = error as Error
-      throw new AppError(e.message, HttpStatus.UNPROCESSABLE_ENTITY, ErrorSeverity.MEDIUM, {
-        functionName: 'sendVerificationEmail',
-      })
+      const e = error as AppErrorType
+      this.handleError(e, 'sendVerificationEmail', 'send', 'email verification')
     }
   }
 
@@ -332,19 +268,8 @@ export class AuthService {
         expirationTime: '60 minutes',
       })
     } catch (error) {
-      if (error instanceof AppError) throw error
-      if (error instanceof Prisma.PrismaClientKnownRequestError)
-        throw new AppError(
-          MESSAGES.ERROR.failedAction('send', 'password reset'),
-          HttpStatus.BAD_REQUEST,
-          ErrorSeverity.LOW,
-          { functionName: 'forgotPassword' }
-        )
-
-      const e = error as Error
-      throw new AppError(e.message, HttpStatus.UNPROCESSABLE_ENTITY, ErrorSeverity.MEDIUM, {
-        functionName: 'forgotPassword',
-      })
+      const e = error as AppErrorType
+      this.handleError(e, 'forgotPassword', 'send', 'password reset')
     }
   }
 
@@ -375,19 +300,8 @@ export class AuthService {
         resetPasswordExpiry: null,
       })
     } catch (error) {
-      if (error instanceof AppError) throw error
-      if (error instanceof Prisma.PrismaClientKnownRequestError)
-        throw new AppError(
-          MESSAGES.ERROR.failedAction('reset', 'password'),
-          HttpStatus.BAD_REQUEST,
-          ErrorSeverity.LOW,
-          { functionName: 'resetPassword' }
-        )
-
-      const e = error as Error
-      throw new AppError(e.message, HttpStatus.UNPROCESSABLE_ENTITY, ErrorSeverity.MEDIUM, {
-        functionName: 'resetPassword',
-      })
+      const e = error as AppErrorType
+      this.handleError(e, 'resetPassword', 'reset', 'password')
     }
   }
 
@@ -404,6 +318,27 @@ export class AuthService {
     }
 
     return publicUser
+  }
+
+  private handleError(
+    error: AppErrorType,
+    functionName: string,
+    action?: string,
+    target?: string
+  ): void {
+    if (error instanceof AppError) throw error
+    if (error instanceof PrismaClientKnownRequestError)
+      throw new AppError(
+        MESSAGES.ERROR.failedAction(action, target),
+        HttpStatus.BAD_REQUEST,
+        ErrorSeverity.LOW,
+        { functionName }
+      )
+
+    const e = error
+    throw new AppError(e.message, HttpStatus.BAD_REQUEST, ErrorSeverity.MEDIUM, {
+      functionName,
+    })
   }
 }
 

@@ -86,7 +86,7 @@ export const MESSAGES = {
     invalidField: (field: string) => `Invalid ${field} format`,
     invalidType: (field: string, type: string) => `${field} must be of type ${type}`,
     requiredField: (field: string) => `${field} is required`,
-    failedAction: (action: string, target: string) => `Failed to ${action} ${target}`,
+    failedAction: (action?: string, target?: string) => `Failed to ${action} ${target}`,
   },
 
   SMTP: {
