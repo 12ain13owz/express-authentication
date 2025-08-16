@@ -1,3 +1,4 @@
+import { Prisma, Role, User } from '@prisma/client'
 import { compare, hash } from 'bcrypt'
 
 import { config } from '@/config'
@@ -5,7 +6,6 @@ import { APP_NAME } from '@/constants/generic.constant'
 import { TokenKey } from '@/constants/jwt.constant'
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
-import { Prisma, Role, User } from '@/generated/prisma'
 import { LoginBody, RegisterBody } from '@/schemas/auth.schema'
 import { UserResponse, UserResponseWithToken } from '@/types/user.type'
 import { AppError } from '@/utils/error-handling.utils'

@@ -1,10 +1,10 @@
+import { Role } from '@prisma/client'
 import { NextFunction, Request, Response } from 'express'
 import { ZodError, ZodObject } from 'zod'
 
 import { TokenKey } from '@/constants/jwt.constant'
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
-import { Role } from '@/generated/prisma'
 import { userRepository } from '@/repository/user.repository'
 import { AppError } from '@/utils/error-handling.utils'
 import { verifyToken } from '@/utils/jwt.utils'

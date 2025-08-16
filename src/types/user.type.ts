@@ -1,4 +1,4 @@
-import { User } from '@/generated/prisma'
+import { User } from '@prisma/client'
 
 export type CreateUser = Omit<
   User,

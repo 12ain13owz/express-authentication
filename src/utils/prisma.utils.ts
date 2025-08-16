@@ -1,5 +1,6 @@
+import { PrismaClient } from '@prisma/client'
+
 import { DATABASE } from '@/constants/database.constant'
-import { PrismaClient } from '@/generated/prisma'
 
 import { logger } from './logger.utils'
 

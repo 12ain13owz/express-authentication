@@ -1,4 +1,5 @@
-import { PrismaClient, User } from '@/generated/prisma'
+import { PrismaClient, User } from '@prisma/client'
+
 import { CreateUser, UpdateUser } from '@/types/user.type'
 import { prisma } from '@/utils/prisma.utils'
 

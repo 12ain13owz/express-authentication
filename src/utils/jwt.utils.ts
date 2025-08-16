@@ -1,10 +1,10 @@
+import { User } from '@prisma/client'
 import { sign, verify } from 'jsonwebtoken'
 
 import { config } from '@/config'
 import { TokenKey } from '@/constants/jwt.constant'
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
-import { User } from '@/generated/prisma'
 import { JwtPayload } from '@/types/generic.type'
 
 import { AppError } from './error-handling.utils'
