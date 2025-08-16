@@ -18,6 +18,7 @@ const loginBodySchema = z.object({
   email: invalidEmail('Email'),
   password: requriedString('Password'),
 })
+
 const refreshTokenBodySchema = z.object({ refreshToken: requriedString('Token') })
 const verifyEmailParamsSchema = z.object({ emailVerificationKey: requriedString('Token') })
 const sendVerifyEmailBodySchema = z.object({ email: invalidEmail('Email') })

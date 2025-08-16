@@ -12,6 +12,7 @@ export const config: Readonly<AppConfig> = {
   port: env.PORT,
   node_env: env.NODE_ENV,
   baseUrl: env.BASE_URL,
+  redisUrl: env.REDIS_URL,
   databaseUrl: env.DATABASE_URL,
   accessTokenKey: env.ACCESS_TOKEN_KEY,
   accessTokenExpiresIn: env.ACCESS_TOKEN_EXPIRES_IN as SignOptions['expiresIn'],

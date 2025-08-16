@@ -47,6 +47,20 @@ export const loginWithTokenController = async (
   }
 }
 
+export const logoutController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await authService.logout(req?.accessToken, req.user?.id)
+    const response = createResponse(MESSAGES.SUCCESS.LOGGED_OUT)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const refreshTokenController = async (
   req: Request<object, object, AuthTypes.RefreshTokenBody>,
   res: Response,
@@ -55,6 +69,20 @@ export const refreshTokenController = async (
   try {
     const result = await authService.refreshAccessToken(req.body.refreshToken)
     const response = createResponse(MESSAGES.SUCCESS.LOGGED_IN, result)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const revokeRefreshTokenController = async (
+  req: Request<object, object, AuthTypes.RefreshTokenBody>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await authService.revokeRefreshToken(req.body.refreshToken)
+    const response = createResponse(MESSAGES.SUCCESS.LOGGED_OUT)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)

@@ -13,10 +13,16 @@ router.post(
 )
 router.post('/login', authController.loginController)
 router.post('/login/me', validateMiddleware.validateToken, authController.loginWithTokenController)
+router.post('/logout', validateMiddleware.validateToken, authController.logoutController)
 router.post(
   '/refresh-token',
   validateMiddleware.validateSchema(authSchema.refresTokenhSchema),
   authController.refreshTokenController
+)
+router.post(
+  '/revoke-token',
+  validateMiddleware.validateToken,
+  authController.revokeRefreshTokenController
 )
 router.get(
   '/verify-email/:emailVerificationKey',

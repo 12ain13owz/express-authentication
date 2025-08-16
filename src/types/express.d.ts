@@ -12,5 +12,6 @@ type AppRes = Response & { locals: CustomResponseLocals }
 declare module 'express' {
   interface Request {
     user?: JwtPayload
+    accessToken?: string
   }
 }

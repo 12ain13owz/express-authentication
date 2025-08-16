@@ -11,10 +11,7 @@ import { AppError } from './error-handling.utils'
 
 export function generateToken(user: User, tokenKey: TokenKey): string | AppError {
   try {
-    const payload: JwtPayload = {
-      id: user.id,
-      email: user.email,
-    }
+    const payload: JwtPayload = { id: user.id, email: user.email }
     const secretKey =
       tokenKey === TokenKey.ACCESS_TOKEN_KEY ? config.accessTokenKey : config.refreshTokenKey
 
@@ -48,18 +45,14 @@ export function verifyToken(token: string, tokenKey: TokenKey): JwtPayload | App
         MESSAGES.ERROR.TOKEN_INVALID_SIGNATURE,
         HttpStatus.UNAUTHORIZED,
         ErrorSeverity.LOW,
-        {
-          functionName: 'VerifyToken',
-        }
+        { functionName: 'VerifyToken' }
       )
 
     const appError = new AppError(
       MESSAGES.ERROR.TOKEN_VERIFICATION_FAILED,
       HttpStatus.UNAUTHORIZED,
       ErrorSeverity.LOW,
-      {
-        functionName: 'VerifyToken',
-      }
+      { functionName: 'VerifyToken' }
     )
 
     throw appError

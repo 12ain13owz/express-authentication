@@ -1,45 +1,90 @@
 export const DATABASE = {
-  CONNECTION: {
-    SUCCESS: `[Database] ✅ connection successful`,
-    FAILED: `[Database] ❌ connection failed`,
-    DISCONNECTED: '📊 Database disconnected',
-    RECONNECTING: '🔄 Attempting to reconnect to database',
-    RECONNECT_SUCCESS: '✅ Database reconnected successfully',
-    RECONNECT_FAILED: '❌ Database reconnection failed',
-    TIMEOUT: '⏰ Database connection timeout',
-    UNAVAILABLE: '🚫 Database service unavailable',
-  },
-  HEALTH_CHECK: {
-    STARTING: '🔍 Starting database health check',
-    PASSED: '✅ Database health check passed',
-    FAILED: '❌ Database health check failed',
+  PRISMA: {
+    CONNECTION: {
+      SUCCESS: `[Prisma] ✅ Connection successful`,
+      FAILED: `[Prisma] ❌ Connection failed`,
+      DISCONNECTED: '[Prisma] 📊 Disconnected',
+      RECONNECTING: '[Prisma] 🔄 Attempting to reconnect',
+      RECONNECT_SUCCESS: '[Prisma] ✅ Reconnected successfully',
+      RECONNECT_FAILED: '[Prisma] ❌ Reconnection failed',
+      TIMEOUT: '[Prisma] ⏰ Connection timeout',
+      UNAVAILABLE: '[Prisma] 🚫 Service unavailable',
+    },
+    HEALTH_CHECK: {
+      STARTING: '[Prisma] 🔍 Starting health check',
+      PASSED: '[Prisma] ✅ Health check passed',
+      FAILED: '[Prisma] ❌ Health check failed',
 
-    retry: (attempt: number, total: number) =>
-      `🔄 Database health check attempt ${attempt}/${total}`,
-    retrying: (seconds: number) => `⏳ Retrying in ${seconds} seconds...`,
+      retry: (attempt: number, total: number) =>
+        `[Prisma] 🔄 Health check attempt ${attempt}/${total}`,
+      retrying: (seconds: number) => `[Prisma] ⏳ Retrying in ${seconds} seconds...`,
+    },
+    ERRORS: {
+      CONNECTION_LOST: '[Prisma] Database connection was lost',
+      QUERY_FAILED: '[Prisma] Database query failed',
+      TRANSACTION_FAILED: '[Prisma] Database transaction failed',
+      MIGRATION_FAILED: '[Prisma] Database migration failed',
+      TIMEOUT_EXCEEDED: '[Prisma] Database operation timeout exceeded',
+      PERMISSION_DENIED: '[Prisma] Database permission denied',
+      INVALID_QUERY: '[Prisma] Invalid database query',
+      CONSTRAINT_VIOLATION: '[Prisma] Database constraint violation',
+    },
+    STATUS: {
+      CONNECTED: 'Connected',
+      DISCONNECTED: 'Disconnected',
+      CONNECTING: 'Connecting',
+      ERROR: 'Error',
+    },
+  },
+  REDIS: {
+    CONNECTION: {
+      SUCCESS: `[Redis] ✅ Connection successful`,
+      FAILED: `[Redis] ❌ Connection failed`,
+      DISCONNECTED: '[Redis] 📊 Disconnected',
+      RECONNECTING: '[Redis] 🔄 Attempting to reconnect',
+      RECONNECT_SUCCESS: '[Redis] ✅ Reconnected successfully',
+      RECONNECT_FAILED: '[Redis] ❌ Reconnection failed',
+      TIMEOUT: '[Redis] ⏰ Connection timeout',
+      UNAVAILABLE: '[Redis] 🚫 Service unavailable',
+    },
+    HEALTH_CHECK: {
+      STARTING: '[Redis] 🔍 Starting health check',
+      PASSED: '[Redis] ✅ Health check passed',
+      FAILED: '[Redis] ❌ Health check failed',
+
+      retry: (attempt: number, total: number) =>
+        `[Redis] 🔄 Health check attempt ${attempt}/${total}`,
+      retrying: (seconds: number) => `[Redis] ⏳ Retrying in ${seconds} seconds...`,
+    },
+    ERRORS: {
+      CONNECTION_LOST: '[Redis] Cache connection was lost',
+      COMMAND_FAILED: '[Redis] Cache command failed',
+      KEY_NOT_FOUND: '[Redis] Cache key not found',
+      TIMEOUT_EXCEEDED: '[Redis] Cache operation timeout exceeded',
+      PERMISSION_DENIED: '[Redis] Cache permission denied',
+      INVALID_COMMAND: '[Redis] Invalid cache command',
+      MEMORY_EXCEEDED: '[Redis] Cache memory limit exceeded',
+      CLUSTER_DOWN: '[Redis] Cache cluster is down',
+    },
+    STATUS: {
+      CONNECTED: 'Connected',
+      DISCONNECTED: 'Disconnected',
+      CONNECTING: 'Connecting',
+      ERROR: 'Error',
+    },
   },
   SERVER: {
-    STARTUP_FAILED: '❌ Cannot start server: Database connection failed',
-    STARTUP_SUCCESS: '🚀 Server started with database connection',
-    SHUTDOWN_GRACEFUL: '🔄 Gracefully shutting down database connection',
+    STARTUP_FAILED: '❌ Cannot start server: Database connections failed',
+    STARTUP_SUCCESS: '🚀 Server started with database connections',
+    SHUTDOWN_GRACEFUL: '🔄 Gracefully shutting down database connections',
 
-    healtEndpoint: (port: number) =>
+    healthEndpoint: (port: number) =>
       `📊 Health check available at: http://localhost:${port}/health`,
   },
-  STATUS: {
-    CONNECTED: 'Connected',
-    DISCONNECTED: 'Disconnected',
-    CONNECTING: 'Connecting',
-    ERROR: 'Error',
-  },
-  ERRORS: {
-    CONNECTION_LOST: 'Database connection was lost',
-    QUERY_FAILED: 'Database query failed',
-    TRANSACTION_FAILED: 'Database transaction failed',
-    MIGRATION_FAILED: 'Database migration failed',
-    TIMEOUT_EXCEEDED: 'Database operation timeout exceeded',
-    PERMISSION_DENIED: 'Database permission denied',
-    INVALID_QUERY: 'Invalid database query',
-    CONSTRAINT_VIOLATION: 'Database constraint violation',
+
+  SMTP: {
+    CONNECTED: '[SMTP] ✅ Connection successful',
+    FAILED: '[SMTP] ❌ Connection failed',
+    DISCONNECTED: 'Disconnected from SMTP successfully',
   },
 } as const

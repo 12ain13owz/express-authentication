@@ -8,46 +8,44 @@ export class DatabaseClient {
   private static instance: PrismaClient
   private static isConnected = false
 
-  public static getInstance(): PrismaClient {
-    if (!DatabaseClient.instance)
-      DatabaseClient.instance = new PrismaClient({ log: ['error', 'warn'] })
+  private static createClient(): PrismaClient {
+    return new PrismaClient({ log: ['error', 'warn'] })
+  }
+
+  static getInstance(): PrismaClient {
+    if (!DatabaseClient.instance) DatabaseClient.instance = this.createClient()
 
     return DatabaseClient.instance
   }
 
-  public static async disconnect(): Promise<void> {
-    if (DatabaseClient.instance) {
-      await DatabaseClient.instance.$disconnect()
-      DatabaseClient.isConnected = false
-      logger.warn(DATABASE.CONNECTION.DISCONNECTED)
-    }
+  static async disconnect(): Promise<void> {
+    if (!DatabaseClient.instance) return
+    await DatabaseClient.instance.$disconnect()
+    DatabaseClient.isConnected = false
+    logger.warn(DATABASE.PRISMA.CONNECTION.DISCONNECTED)
   }
 
-  // ✅ Health Check Method
-  public static async healthCheck(): Promise<void> {
+  static async healthCheck(): Promise<void> {
     try {
       const client = this.getInstance()
       await client.$queryRaw`SELECT 1`
       this.isConnected = true
-      logger.info(DATABASE.CONNECTION.SUCCESS)
+      logger.info(DATABASE.PRISMA.CONNECTION.SUCCESS)
     } catch (error) {
       this.isConnected = false
-      logger.error([DATABASE.CONNECTION.FAILED, error])
+      logger.error([DATABASE.PRISMA.CONNECTION.FAILED, error])
       throw error
     }
   }
 
-  // ✅ Get Connection Status
-  public static getConnectionStatus(): boolean {
+  static getConnectionStatus(): boolean {
     return this.isConnected
   }
 
-  // ✅ Reconnect if needed
-  public static async reconnect(): Promise<void> {
-    if (this.instance) {
-      await this.disconnect()
-      this.instance = new PrismaClient()
-    }
+  static async reconnect(): Promise<void> {
+    if (this.instance) await this.disconnect()
+    this.instance = this.createClient()
+
     return this.healthCheck()
   }
 }

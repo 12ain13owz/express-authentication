@@ -6,6 +6,7 @@ export type AppConfig = {
   port: number
   node_env: NodeEnv
   baseUrl: string
+  redisUrl: string
   databaseUrl: string
   accessTokenKey: string
   accessTokenExpiresIn: SignOptions['expiresIn']

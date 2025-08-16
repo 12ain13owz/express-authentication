@@ -5,6 +5,7 @@ import { createTransport, getTestMessageUrl, Transporter } from 'nodemailer'
 import SMTPTransport from 'nodemailer/lib/smtp-transport'
 
 import { config } from '@/config'
+import { DATABASE } from '@/constants/database.constant'
 import { NodeEnv } from '@/constants/env.constant'
 import { APP_NAME, TemplateHtml } from '@/constants/generic.constant'
 import { MESSAGES } from '@/constants/message.constant'
@@ -83,9 +84,9 @@ export class MailerService {
   async testConnection(): Promise<void> {
     try {
       await this.transporter.verify()
-      logger.info(MESSAGES.SMTP.CONNECTED)
+      logger.info(DATABASE.SMTP.CONNECTED)
     } catch (error) {
-      logger.error([MESSAGES.SMTP.FAILED, error])
+      logger.error([DATABASE.SMTP.FAILED, error])
       throw error
     }
   }

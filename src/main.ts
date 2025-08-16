@@ -10,6 +10,7 @@ import { mainRoutes } from './routes'
 import { mailerService } from './services/mailer.service'
 import { logger } from './utils/logger.utils'
 import { DatabaseClient } from './utils/prisma.utils'
+import { RedisClient } from './utils/redis.utils'
 
 const app = express()
 const port = config.port
@@ -24,6 +25,7 @@ app.use(errorHandler)
 
 app.listen(port, () => {
   DatabaseClient.healthCheck()
+    .then(() => RedisClient.healthCheck())
     .then(() => mailerService.testConnection())
     .then(() => logger.info(MESSAGES.GENERIC.serverListening(port)))
     .catch((error) => {

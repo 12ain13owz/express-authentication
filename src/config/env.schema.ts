@@ -8,6 +8,7 @@ export const envSchema = object({
     .pipe(number().int().positive()),
   NODE_ENV: z.enum([NodeEnv.DEVELOPMENT, NodeEnv.PRODUCTION]),
   BASE_URL: string(),
+  REDIS_URL: string(),
   DATABASE_URL: string(),
   ACCESS_TOKEN_KEY: string(),
   REFRESH_TOKEN_KEY: string(),

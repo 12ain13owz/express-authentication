@@ -88,10 +88,4 @@ export const MESSAGES = {
     requiredField: (field: string) => `${field} is required`,
     failedAction: (action?: string, target?: string) => `Failed to ${action} ${target}`,
   },
-
-  SMTP: {
-    CONNECTED: '[SMTP] ✅ connection successful',
-    FAILED: '[SMTP] ❌ connection failed',
-    DISCONNECTED: 'Disconnected from SMTP successfully',
-  },
 }

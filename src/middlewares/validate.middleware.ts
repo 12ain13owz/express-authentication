@@ -6,6 +6,7 @@ import { TokenKey } from '@/constants/jwt.constant'
 import { ErrorSeverity } from '@/constants/logger.constant'
 import { HttpStatus, MESSAGES } from '@/constants/message.constant'
 import { userRepository } from '@/repository/user.repository'
+import { redisService } from '@/services/redis.service'
 import { AppError } from '@/utils/error-handling.utils'
 import { verifyToken } from '@/utils/jwt.utils'
 
@@ -38,7 +39,7 @@ export const validateSchema =
     }
   }
 
-export const validateToken = (req: Request, _res: Response, next: NextFunction) => {
+export const validateToken = async (req: Request, _res: Response, next: NextFunction) => {
   try {
     const token = req.headers.authorization?.split(' ')[1]
     if (!token)
@@ -46,14 +47,24 @@ export const validateToken = (req: Request, _res: Response, next: NextFunction) 
         MESSAGES.ERROR.TOKEN_NOT_FOUND_REVOKED,
         HttpStatus.UNAUTHORIZED,
         ErrorSeverity.LOW,
-        {
-          functionName: 'verifyToken',
-        }
+        { functionName: 'validateToken' }
       )
 
     const decodedToken = verifyToken(token, TokenKey.ACCESS_TOKEN_KEY)
     if (decodedToken instanceof AppError) throw decodedToken
 
+    const isBlacklisted = await redisService.isAccessTokenBlacklisted(token)
+    if (isBlacklisted) {
+      await redisService.deleteRefreshToken(decodedToken.id)
+      throw new AppError(
+        MESSAGES.ERROR.TOKEN_NOT_FOUND_REVOKED,
+        HttpStatus.UNAUTHORIZED,
+        ErrorSeverity.LOW,
+        { functionName: 'validateToken' }
+      )
+    }
+
+    req.accessToken = token
     req.user = decodedToken
     next()
   } catch (error) {
@@ -69,9 +80,7 @@ export const validateRoles =
           MESSAGES.ERROR.notFound('User'),
           HttpStatus.NOT_FOUND,
           ErrorSeverity.LOW,
-          {
-            functionName: 'findUserById',
-          }
+          { functionName: 'findUserById' }
         )
 
       const user = await userRepository.findUserById(req.user.id)
@@ -80,9 +89,7 @@ export const validateRoles =
           MESSAGES.ERROR.notFound('User'),
           HttpStatus.NOT_FOUND,
           ErrorSeverity.LOW,
-          {
-            functionName: 'findUserById',
-          }
+          { functionName: 'findUserById' }
         )
 
       if (!Array.from(user.role).some((role) => roles.includes(role))) {
@@ -90,9 +97,7 @@ export const validateRoles =
           MESSAGES.ERROR.UNAUTHORIZED_ACCESS,
           HttpStatus.UNAUTHORIZED,
           ErrorSeverity.LOW,
-          {
-            functionName: 'validateRoles',
-          }
+          { functionName: 'validateRoles' }
         )
       }
 

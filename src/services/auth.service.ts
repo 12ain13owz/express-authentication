@@ -15,6 +15,7 @@ import { generateVerifyKey, getVerifyExpiry, isVerificationExpired } from '@/uti
 import { generateToken, verifyToken } from '@/utils/jwt.utils'
 
 import { mailerService, MailerService } from './mailer.service'
+import { RedisService, redisService } from './redis.service'
 import { userRepository, UserRepository } from '../repository/user.repository'
 
 export class AuthService {
@@ -22,6 +23,7 @@ export class AuthService {
 
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly redisService: RedisService,
     private readonly mailerService: MailerService
   ) {}
 
@@ -88,9 +90,11 @@ export class AuthService {
 
       const accessToken = generateToken(existingUser, TokenKey.ACCESS_TOKEN_KEY)
       if (accessToken instanceof AppError) throw accessToken
-
       const refreshToken = generateToken(existingUser, TokenKey.REFRESH_TOKEN_KEY)
       if (refreshToken instanceof AppError) throw refreshToken
+
+      const refreshTokenTTL = 60 * 60 * 24 * 7
+      await redisService.storeRefreshToken(existingUser.id, refreshToken, refreshTokenTTL)
 
       const publicUser = this.publicUser(existingUser)
       return { user: publicUser, accessToken, refreshToken }
@@ -131,10 +135,32 @@ export class AuthService {
     }
   }
 
+  async logout(accessToken?: string, userId?: number): Promise<void> {
+    try {
+      if (accessToken) await this.redisService.blacklistAccessToken(accessToken, 60 * 15)
+      if (userId) await this.redisService.deleteRefreshToken(userId)
+    } catch (error) {
+      const e = error as AppErrorType
+      this.handleError(e, 'logout', 'logout', 'account')
+    }
+  }
+
   async refreshAccessToken(refreshToken: string): Promise<UserResponseWithToken | void> {
     try {
       const decodedToken = verifyToken(refreshToken, TokenKey.REFRESH_TOKEN_KEY)
       if (decodedToken instanceof AppError) throw decodedToken
+
+      const storedRefreshToken = await redisService.getRefreshToken(decodedToken.id)
+      if (!storedRefreshToken || storedRefreshToken !== refreshToken)
+        throw new AppError(
+          MESSAGES.ERROR.TOKEN_VERIFICATION_FAILED,
+          HttpStatus.UNAUTHORIZED,
+          ErrorSeverity.LOW,
+          {
+            functionName: 'refreshAccessToken',
+            additionalData: { reason: 'Invalid or revoked refresh token' },
+          }
+        )
 
       const existingUser = await this.userRepository.findUserById(decodedToken.id)
       if (!existingUser) {
@@ -146,17 +172,33 @@ export class AuthService {
         )
       }
 
+      await redisService.deleteRefreshToken(existingUser.id)
+
       const newAccessToken = generateToken(existingUser, TokenKey.ACCESS_TOKEN_KEY)
       if (newAccessToken instanceof AppError) throw newAccessToken
-
       const newRefreshToken = generateToken(existingUser, TokenKey.REFRESH_TOKEN_KEY)
       if (newRefreshToken instanceof AppError) throw newRefreshToken
+
+      const newRefreshTokenTTL = 60 * 60 * 24 * 7
+      await redisService.storeRefreshToken(existingUser.id, newRefreshToken, newRefreshTokenTTL)
 
       const publicUser = this.publicUser(existingUser)
       return { user: publicUser, accessToken: newAccessToken, refreshToken: newRefreshToken }
     } catch (error) {
       const e = error as AppErrorType
       this.handleError(e, 'refreshAccessToken', 'login', 'account')
+    }
+  }
+
+  async revokeRefreshToken(refreshToken: string): Promise<void> {
+    try {
+      const decodedToken = verifyToken(refreshToken, TokenKey.REFRESH_TOKEN_KEY)
+      if (decodedToken instanceof AppError) throw decodedToken
+
+      await this.redisService.deleteRefreshToken(decodedToken.id)
+    } catch (error) {
+      const e = error as AppErrorType
+      this.handleError(e, 'revokeRefreshToken', 'revoke', 'account')
     }
   }
 
@@ -342,4 +384,4 @@ export class AuthService {
   }
 }
 
-export const authService = new AuthService(userRepository, mailerService)
+export const authService = new AuthService(userRepository, redisService, mailerService)
