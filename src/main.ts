@@ -10,6 +10,7 @@ import { errorHandler } from './middlewares/error-response.middleware'
 import { limiter } from './middlewares/rate-limit.middleware'
 import { mainRoutes } from './routes'
 import { mailerService } from './services/mailer.service'
+import { helmetOptions } from './utils/generic.utils'
 import { logger } from './utils/logger.utils'
 import { DatabaseClient } from './utils/prisma.utils'
 import { RedisClient } from './utils/redis.utils'
@@ -19,7 +20,7 @@ const baseUrl = config.baseUrl
 const port = config.port
 
 app.use(cors())
-app.use(helmet())
+app.use(helmet(helmetOptions))
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(limiter)

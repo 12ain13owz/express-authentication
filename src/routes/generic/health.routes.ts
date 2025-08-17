@@ -7,4 +7,4 @@ const router = Router()
 router.get('/', healthController.successController)
 router.get('/error', healthController.errorController)
 
-export const healthRoter = router
+export const healthRouter = router

@@ -1,3 +1,4 @@
+import { HelmetOptions } from 'helmet'
 import { randomBytes } from 'node:crypto'
 
 import { AppResponse } from '@/types/generic.type'
@@ -21,4 +22,13 @@ export const getVerifyExpiry = (hours: number): Date => {
 export const isVerificationExpired = (expiryDate: Date | null | undefined): boolean => {
   if (!expiryDate) return true
   return expiryDate < new Date()
+}
+
+export const helmetOptions: HelmetOptions = {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'cdn.stoplight.io', 'unpkg.com'],
+    },
+  },
 }

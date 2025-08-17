@@ -1,4 +1,3 @@
-// rateLimitConfig.ts
 import rateLimit from 'express-rate-limit'
 
 import { ERRORS } from '@/consts/systems/errors.const'
