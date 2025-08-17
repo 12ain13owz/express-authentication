@@ -1,4 +1,4 @@
-import { BLACKLIST, REFRESH_TOKEN_KEY } from '@/constants/jwt.constant'
+import { BLACKLIST, REFRESH_TOKEN_KEY } from '@/consts/utils/jwt.const'
 import { redisClient } from '@/utils/redis.utils'
 
 export class RedisService {

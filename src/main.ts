@@ -5,7 +5,7 @@ import morgan from 'morgan'
 import path from 'node:path'
 
 import { config } from './config'
-import { MESSAGES } from './constants/message.constant'
+import { GENERIC } from './consts/systems/generic.const'
 import { errorHandler } from './middlewares/error-response.middleware'
 import { limiter } from './middlewares/rate-limit.middleware'
 import { mainRoutes } from './routes'
@@ -15,6 +15,7 @@ import { DatabaseClient } from './utils/prisma.utils'
 import { RedisClient } from './utils/redis.utils'
 
 const app = express()
+const baseUrl = config.baseUrl
 const port = config.port
 
 app.use(cors())
@@ -31,7 +32,7 @@ app.listen(port, () => {
   DatabaseClient.healthCheck()
     .then(() => RedisClient.healthCheck())
     .then(() => mailerService.testConnection())
-    .then(() => logger.info(MESSAGES.GENERIC.serverListening(port)))
+    .then(() => logger.info(GENERIC.serverListening(baseUrl, port)))
     .catch((error) => {
       logger.error(error)
       process.exit(1)

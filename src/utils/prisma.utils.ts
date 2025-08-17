@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 
-import { DATABASE } from '@/constants/database.constant'
+import { PRISMA } from '@/consts/databases/prisma.const'
 
 import { logger } from './logger.utils'
 
@@ -22,7 +22,7 @@ export class DatabaseClient {
     if (!DatabaseClient.instance) return
     await DatabaseClient.instance.$disconnect()
     DatabaseClient.isConnected = false
-    logger.warn(DATABASE.PRISMA.CONNECTION.DISCONNECTED)
+    logger.warn(PRISMA.CONNECTION.DISCONNECTED)
   }
 
   static async healthCheck(): Promise<void> {
@@ -30,10 +30,10 @@ export class DatabaseClient {
       const client = this.getInstance()
       await client.$queryRaw`SELECT 1`
       this.isConnected = true
-      logger.info(DATABASE.PRISMA.CONNECTION.SUCCESS)
+      logger.info(PRISMA.CONNECTION.SUCCESS)
     } catch (error) {
       this.isConnected = false
-      logger.error([DATABASE.PRISMA.CONNECTION.FAILED, error])
+      logger.error([PRISMA.CONNECTION.FAILED, error])
       throw error
     }
   }

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import winston from 'winston'
 
-import { Colors } from '@/constants/logger.constant'
+import { Colors } from '@/consts/utils/logger.const'
 
 // Function to create ANSI color string
 function applyColor(value: unknown, colorCode: string): string {
@@ -26,10 +26,7 @@ function formatArray(arr: unknown[], indent = 0): string {
 }
 
 // Function to check if a key is an actual property of an object, preventing prototype pollution
-function safeHasOwnProperty(
-  obj: Record<string, unknown>,
-  key: string
-): boolean {
+function safeHasOwnProperty(obj: Record<string, unknown>, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(obj, key)
 }
 
@@ -55,10 +52,7 @@ function formatObject(obj: Record<string, unknown>, indent = 0): string {
     const value = safeGetProperty(obj, key)
     const formattedValue = formatAny(value, indent + 2)
 
-    result += `\n${indentStr} ${applyColor(
-      `"${key}"`,
-      Colors.FIELD
-    )}: ${formattedValue}`
+    result += `\n${indentStr} ${applyColor(`"${key}"`, Colors.FIELD)}: ${formattedValue}`
     if (index < ownKeys.length - 1) result += ','
   })
 
@@ -71,8 +65,7 @@ function formatPrimitive(value: unknown): string {
   if (typeof value === 'string') return applyColor(`"${value}"`, Colors.STRING)
   if (typeof value === 'number') return applyColor(value, Colors.NUMBER)
   if (typeof value === 'boolean') return applyColor(value, Colors.BOOLEAN)
-  if (typeof value === 'function')
-    return applyColor('function', Colors.FUNCTION)
+  if (typeof value === 'function') return applyColor('function', Colors.FUNCTION)
   if (value === undefined) return applyColor('undefined', Colors.UNDEFINED)
   if (value === null) return applyColor('null', Colors.NULL)
   if (value instanceof Date) return applyColor(value.toISOString(), Colors.DATE)

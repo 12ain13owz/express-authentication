@@ -1,7 +1,7 @@
 import Redis from 'ioredis'
 
 import { config } from '@/config'
-import { DATABASE } from '@/constants/database.constant'
+import { REDIS } from '@/consts/databases/redis.const'
 
 import { logger } from './logger.utils'
 
@@ -19,7 +19,7 @@ export class RedisClient {
 
     RedisClient.instance.disconnect()
     RedisClient.isConnected = false
-    logger.warn(DATABASE.REDIS.CONNECTION.DISCONNECTED)
+    logger.warn(REDIS.CONNECTION.DISCONNECTED)
   }
 
   static async healthCheck(): Promise<void> {
@@ -28,15 +28,15 @@ export class RedisClient {
       const response = await client.ping()
 
       if (response === 'PONG') {
-        logger.info(DATABASE.REDIS.CONNECTION.SUCCESS)
+        logger.info(REDIS.CONNECTION.SUCCESS)
         this.isConnected = true
       } else {
-        logger.error(DATABASE.REDIS.CONNECTION.FAILED)
+        logger.error(REDIS.CONNECTION.FAILED)
         this.isConnected = false
       }
     } catch (error) {
       this.isConnected = false
-      logger.error(DATABASE.REDIS.CONNECTION.UNAVAILABLE)
+      logger.error(REDIS.CONNECTION.UNAVAILABLE)
       throw error
     }
   }

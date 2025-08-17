@@ -1,6 +1,6 @@
 import { SignOptions } from 'jsonwebtoken'
 
-import { NodeEnv } from '@/constants/env.constant'
+import { NodeEnv } from '@/consts/env/env.constant'
 
 export type AppConfig = {
   port: number

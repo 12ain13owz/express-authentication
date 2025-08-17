@@ -5,10 +5,9 @@ import { createTransport, getTestMessageUrl, Transporter } from 'nodemailer'
 import SMTPTransport from 'nodemailer/lib/smtp-transport'
 
 import { config } from '@/config'
-import { DATABASE } from '@/constants/database.constant'
-import { NodeEnv } from '@/constants/env.constant'
-import { APP_NAME, TemplateHtml } from '@/constants/generic.constant'
-import { MESSAGES } from '@/constants/message.constant'
+import { NodeEnv } from '@/consts/env/env.constant'
+import { SMTP } from '@/consts/mailer/smtp.const'
+import { APP_NAME, TemplateHtml } from '@/consts/systems/generic.const'
 import { MailOptions, ResetPasswordData, VerifyEmailData } from '@/types/mailer.type'
 import { logger } from '@/utils/logger.utils'
 
@@ -65,7 +64,7 @@ export class MailerService {
       currentYear: new Date().getFullYear().toString(),
     })
 
-    await this.sendEmail({ to, subject: MESSAGES.GENERIC.SEND_VERIFICATION_EMAIL, html })
+    await this.sendEmail({ to, subject: SMTP.EMAIL.VERIFY_SUBJECT, html })
   }
 
   async sendPasswordResetEmail(to: string, data: ResetPasswordData): Promise<void> {
@@ -78,15 +77,15 @@ export class MailerService {
       currentYear: new Date().getFullYear().toString(),
     })
 
-    await this.sendEmail({ to, subject: MESSAGES.GENERIC.SEND_VERIFICATION_EMAIL, html })
+    await this.sendEmail({ to, subject: SMTP.EMAIL.RESET_PASSWORD_SUBJECT, html })
   }
 
   async testConnection(): Promise<void> {
     try {
       await this.transporter.verify()
-      logger.info(DATABASE.SMTP.CONNECTED)
+      logger.info(SMTP.CONNECTION.CONNECTED)
     } catch (error) {
-      logger.error([DATABASE.SMTP.FAILED, error])
+      logger.error([SMTP.CONNECTION.FAILED, error])
       throw error
     }
   }

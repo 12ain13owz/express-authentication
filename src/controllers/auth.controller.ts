@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 
-import { HttpStatus, MESSAGES } from '@/constants/message.constant'
+import { HttpStatus } from '@/consts/systems/http-status.const'
+import { SUCCESS } from '@/consts/systems/success.const'
 import * as AuthTypes from '@/schemas/auth.schema'
 import { authService } from '@/services/auth.service'
 import { createResponse } from '@/utils/generic.utils'
@@ -12,7 +13,7 @@ export const registerController = async (
 ): Promise<void> => {
   try {
     const result = await authService.register(req.body)
-    const response = createResponse(MESSAGES.SUCCESS.REGISTER, result)
+    const response = createResponse(SUCCESS.AUTH.REGISTER, result)
     res.status(HttpStatus.CREATED).json(response)
   } catch (error) {
     next(error)
@@ -26,7 +27,7 @@ export const loginController = async (
 ): Promise<void> => {
   try {
     const result = await authService.login(req.body)
-    const response = createResponse(MESSAGES.SUCCESS.LOGGED_IN, result)
+    const response = createResponse(SUCCESS.AUTH.LOGGED_IN, result)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -40,7 +41,7 @@ export const loginWithTokenController = async (
 ): Promise<void> => {
   try {
     const result = await authService.loginWithToken(req.user?.id)
-    const response = createResponse(MESSAGES.SUCCESS.LOGGED_IN, result)
+    const response = createResponse(SUCCESS.AUTH.LOGGED_IN, result)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -54,7 +55,7 @@ export const logoutController = async (
 ): Promise<void> => {
   try {
     await authService.logout(req?.accessToken, req.user?.id)
-    const response = createResponse(MESSAGES.SUCCESS.LOGGED_OUT)
+    const response = createResponse(SUCCESS.AUTH.LOGGED_OUT)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -68,7 +69,7 @@ export const refreshTokenController = async (
 ): Promise<void> => {
   try {
     const result = await authService.refreshAccessToken(req.body.refreshToken)
-    const response = createResponse(MESSAGES.SUCCESS.LOGGED_IN, result)
+    const response = createResponse(SUCCESS.AUTH.LOGGED_IN, result)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -82,7 +83,7 @@ export const revokeRefreshTokenController = async (
 ): Promise<void> => {
   try {
     await authService.revokeRefreshToken(req.body.refreshToken)
-    const response = createResponse(MESSAGES.SUCCESS.LOGGED_OUT)
+    const response = createResponse(SUCCESS.AUTH.LOGGED_OUT)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -96,7 +97,7 @@ export const verifyEmailController = async (
 ): Promise<void> => {
   try {
     await authService.verifyEmail(req.params.emailVerificationKey)
-    const response = createResponse(MESSAGES.SUCCESS.EMAIL_VERIFIED)
+    const response = createResponse(SUCCESS.EMAIL.VERIFIED)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -110,7 +111,7 @@ export const sendVerifyEmailController = async (
 ): Promise<void> => {
   try {
     await authService.sendVerificationEmail(req.body.email)
-    const response = createResponse(MESSAGES.SUCCESS.EMAIL_SENT)
+    const response = createResponse(SUCCESS.EMAIL.SENT)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -124,7 +125,7 @@ export const forgotPasswordController = async (
 ): Promise<void> => {
   try {
     await authService.forgotPassword(req.body.email)
-    const response = createResponse(MESSAGES.SUCCESS.EMAIL_SENT)
+    const response = createResponse(SUCCESS.EMAIL.SENT)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -138,7 +139,7 @@ export const resetPasswordController = async (
 ): Promise<void> => {
   try {
     await authService.resetPassword(req.body.token, req.body.password)
-    const response = createResponse(MESSAGES.SUCCESS.PASSWORD_RESET)
+    const response = createResponse(SUCCESS.AUTH.PASSWORD_RESET)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
@@ -152,7 +153,7 @@ export const getProfileController = async (
 ): Promise<void> => {
   try {
     const result = await authService.getProfile(req.user?.id)
-    const response = createResponse(MESSAGES.SUCCESS.OK, result)
+    const response = createResponse(SUCCESS.GENERIC.OK, result)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)

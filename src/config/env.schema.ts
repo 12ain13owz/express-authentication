@@ -1,6 +1,6 @@
 import { number, object, string, z } from 'zod'
 
-import { NodeEnv } from '@/constants/env.constant'
+import { NodeEnv } from '@/consts/env/env.constant'
 
 export const envSchema = object({
   PORT: string()

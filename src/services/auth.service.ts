@@ -3,10 +3,11 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { compare, hash } from 'bcrypt'
 
 import { config } from '@/config'
-import { APP_NAME } from '@/constants/generic.constant'
-import { TokenKey } from '@/constants/jwt.constant'
-import { ErrorSeverity } from '@/constants/logger.constant'
-import { HttpStatus, MESSAGES } from '@/constants/message.constant'
+import { ERRORS } from '@/consts/systems/errors.const'
+import { APP_NAME } from '@/consts/systems/generic.const'
+import { HttpStatus } from '@/consts/systems/http-status.const'
+import { TokenKey } from '@/consts/utils/jwt.const'
+import { ErrorSeverity } from '@/consts/utils/logger.const'
 import { LoginBody, RegisterBody } from '@/schemas/auth.schema'
 import { AppErrorType } from '@/types/error.type'
 import { UserResponse, UserResponseWithToken } from '@/types/user.type'
@@ -20,6 +21,7 @@ import { userRepository, UserRepository } from '../repository/user.repository'
 
 export class AuthService {
   private readonly saltRounds = 10
+  private readonly authApiUrl = `${config.baseUrl}${config.port}/api/auth`
 
   constructor(
     private readonly userRepository: UserRepository,
@@ -32,12 +34,9 @@ export class AuthService {
       const { email, password, firstName, lastName } = body
       const existingUser = await this.userRepository.findUserByEmail(email)
       if (existingUser)
-        throw new AppError(
-          MESSAGES.ERROR.alreadyExists('Email'),
-          HttpStatus.CONFLICT,
-          ErrorSeverity.LOW,
-          { functionName: 'register' }
-        )
+        throw new AppError(ERRORS.EMAIL.ALREADY_IN_USE, HttpStatus.BAD_REQUEST, ErrorSeverity.LOW, {
+          functionName: 'register',
+        })
 
       const hashedPassword = await hash(password, this.saltRounds)
       const emailVerificationKey = generateVerifyKey()
@@ -55,7 +54,7 @@ export class AuthService {
 
       await this.mailerService.sendVerificationEmail(email, {
         username: `${firstName} ${lastName}`,
-        verificationLink: `${config.baseUrl}/api/auth/verify-email/${emailVerificationKey}`,
+        verificationLink: `${this.authApiUrl}/verify-email/${emailVerificationKey}`,
         appName: APP_NAME,
         expirationTime: '60 minutes',
       })
@@ -72,17 +71,14 @@ export class AuthService {
       const { email, password } = body
       const existingUser = await this.userRepository.findUserByEmail(email)
       if (!existingUser)
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'login' }
-        )
+        throw new AppError(ERRORS.UTIL.notFound('Email'), HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'login',
+        })
 
       const isValidPassword = await compare(password, existingUser.password)
       if (!isValidPassword)
         throw new AppError(
-          MESSAGES.ERROR.EMAIL_PASSWORD_INVALID,
+          ERRORS.EMAIL.PASSWORD_INVALID,
           HttpStatus.UNAUTHORIZED,
           ErrorSeverity.LOW,
           { functionName: 'login' }
@@ -108,7 +104,7 @@ export class AuthService {
     try {
       if (!id)
         throw new AppError(
-          MESSAGES.ERROR.TOKEN_VERIFICATION_FAILED,
+          ERRORS.TOKEN.VERIFICATION_FAILED,
           HttpStatus.BAD_REQUEST,
           ErrorSeverity.LOW,
           { functionName: 'loginWithToken' }
@@ -116,12 +112,9 @@ export class AuthService {
 
       const existingUser = await this.userRepository.findUserById(id)
       if (!existingUser) {
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'loginWithToken' }
-        )
+        throw new AppError(ERRORS.UTIL.notFound('User'), HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'loginWithToken',
+        })
       }
 
       const newAccessToken = generateToken(existingUser, TokenKey.ACCESS_TOKEN_KEY)
@@ -153,7 +146,7 @@ export class AuthService {
       const storedRefreshToken = await redisService.getRefreshToken(decodedToken.id)
       if (!storedRefreshToken || storedRefreshToken !== refreshToken)
         throw new AppError(
-          MESSAGES.ERROR.TOKEN_VERIFICATION_FAILED,
+          ERRORS.TOKEN.VERIFICATION_FAILED,
           HttpStatus.UNAUTHORIZED,
           ErrorSeverity.LOW,
           {
@@ -164,12 +157,9 @@ export class AuthService {
 
       const existingUser = await this.userRepository.findUserById(decodedToken.id)
       if (!existingUser) {
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'refreshAccessToken' }
-        )
+        throw new AppError(ERRORS.UTIL.notFound('User'), HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'refreshAccessToken',
+        })
       }
 
       await redisService.deleteRefreshToken(existingUser.id)
@@ -209,15 +199,15 @@ export class AuthService {
       )
       if (!existingUser)
         throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
+          ERRORS.EMAIL.ALREADY_VERIFIED,
+          HttpStatus.BAD_REQUEST,
           ErrorSeverity.LOW,
           { functionName: 'verifyEmail' }
         )
 
       if (existingUser.isVerified) {
         throw new AppError(
-          MESSAGES.ERROR.EMAIL_ALREADY_VERIFIED,
+          ERRORS.EMAIL.ALREADY_VERIFIED,
           HttpStatus.BAD_REQUEST,
           ErrorSeverity.LOW,
           { functionName: 'verifyEmail' }
@@ -226,7 +216,7 @@ export class AuthService {
 
       if (isVerificationExpired(existingUser.emailVerificationExpiry)) {
         throw new AppError(
-          MESSAGES.ERROR.EMAIL_VERIFICATION_EXPIRED,
+          ERRORS.EMAIL.VERIFICATION_EXPIRED,
           HttpStatus.BAD_REQUEST,
           ErrorSeverity.LOW,
           { functionName: 'verifyEmail' }
@@ -248,16 +238,13 @@ export class AuthService {
     try {
       const existingUser = await this.userRepository.findUserByEmail(email)
       if (!existingUser)
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'sendVerificationEmail' }
-        )
+        throw new AppError(ERRORS.UTIL.notFound('User'), HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'sendVerificationEmail',
+        })
 
       if (existingUser.isVerified) {
         throw new AppError(
-          MESSAGES.ERROR.EMAIL_ALREADY_VERIFIED,
+          ERRORS.EMAIL.ALREADY_VERIFIED,
           HttpStatus.BAD_REQUEST,
           ErrorSeverity.LOW,
           { functionName: 'sendVerificationEmail' }
@@ -274,7 +261,7 @@ export class AuthService {
 
       await this.mailerService.sendVerificationEmail(email, {
         username: `${existingUser.firstName} ${existingUser.lastName}`,
-        verificationLink: `${config.baseUrl}/api/auth/verify-email/${emailVerificationKey}`,
+        verificationLink: `${this.authApiUrl}/verify-email/${emailVerificationKey}`,
         appName: APP_NAME,
         expirationTime: '60 minutes',
       })
@@ -288,12 +275,9 @@ export class AuthService {
     try {
       const existingUser = await this.userRepository.findUserByEmail(email)
       if (!existingUser)
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'forgotPassword' }
-        )
+        throw new AppError(ERRORS.UTIL.notFound('User'), HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'forgotPassword',
+        })
 
       const resetPasswordKey = generateVerifyKey()
       const resetPasswordExpiry = getVerifyExpiry(1)
@@ -305,7 +289,7 @@ export class AuthService {
 
       await this.mailerService.sendPasswordResetEmail(email, {
         username: `${existingUser.firstName} ${existingUser.lastName}`,
-        resetLink: `${config.baseUrl}/api/auth/reset-password/${resetPasswordKey}`,
+        resetLink: `${this.authApiUrl}/reset-password/${resetPasswordKey}`,
         appName: APP_NAME,
         expirationTime: '60 minutes',
       })
@@ -319,16 +303,13 @@ export class AuthService {
     try {
       const existingUser = await this.userRepository.findUserByResetPasswordKey(passwordResetKey)
       if (!existingUser)
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'resetPassword' }
-        )
+        throw new AppError(ERRORS.PASSWORD.RESET_EXPIRED, HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'resetPassword',
+        })
 
       if (isVerificationExpired(existingUser.resetPasswordExpiry)) {
         throw new AppError(
-          MESSAGES.ERROR.PASSWORD_RESET_EXPIRED,
+          ERRORS.PASSWORD.RESET_EXPIRED,
           HttpStatus.BAD_REQUEST,
           ErrorSeverity.LOW,
           { functionName: 'resetPassword' }
@@ -351,7 +332,7 @@ export class AuthService {
     try {
       if (!id)
         throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
+          ERRORS.UTIL.notFound('User'),
           HttpStatus.BAD_REQUEST,
           ErrorSeverity.LOW,
           { functionName: 'getProfile' }
@@ -359,12 +340,9 @@ export class AuthService {
 
       const existingUser = await this.userRepository.findUserById(id)
       if (!existingUser) {
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'getProfile' }
-        )
+        throw new AppError(ERRORS.UTIL.notFound('User'), HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'getProfile',
+        })
       }
 
       return this.publicUser(existingUser)
@@ -398,7 +376,7 @@ export class AuthService {
     if (error instanceof AppError) throw error
     if (error instanceof PrismaClientKnownRequestError)
       throw new AppError(
-        MESSAGES.ERROR.failedAction(action, target),
+        ERRORS.UTIL.failedAction(action, target),
         HttpStatus.BAD_REQUEST,
         ErrorSeverity.LOW,
         { functionName }

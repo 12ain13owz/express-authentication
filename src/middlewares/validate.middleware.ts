@@ -2,9 +2,10 @@ import { Role } from '@prisma/client'
 import { NextFunction, Request, Response } from 'express'
 import { ZodError, ZodObject } from 'zod'
 
-import { TokenKey } from '@/constants/jwt.constant'
-import { ErrorSeverity } from '@/constants/logger.constant'
-import { HttpStatus, MESSAGES } from '@/constants/message.constant'
+import { ERRORS } from '@/consts/systems/errors.const'
+import { HttpStatus } from '@/consts/systems/http-status.const'
+import { TokenKey } from '@/consts/utils/jwt.const'
+import { ErrorSeverity } from '@/consts/utils/logger.const'
 import { userRepository } from '@/repository/user.repository'
 import { redisService } from '@/services/redis.service'
 import { AppError } from '@/utils/error-handling.utils'
@@ -24,7 +25,7 @@ export const validateSchema =
       req.body = parse.body
       next()
     } catch (error) {
-      let message = MESSAGES.ERROR.VALIDATION_ERROR
+      let message = ERRORS.SYSTEM.VALIDATION_ERROR
       let status = HttpStatus.INTERNAL_SERVER_ERROR
 
       if (error instanceof ZodError) {
@@ -44,7 +45,7 @@ export const validateToken = async (req: Request, _res: Response, next: NextFunc
     const token = req.headers.authorization?.split(' ')[1]
     if (!token)
       throw new AppError(
-        MESSAGES.ERROR.TOKEN_NOT_FOUND_REVOKED,
+        ERRORS.TOKEN.NOT_FOUND_REVOKED,
         HttpStatus.UNAUTHORIZED,
         ErrorSeverity.LOW,
         { functionName: 'validateToken' }
@@ -57,7 +58,7 @@ export const validateToken = async (req: Request, _res: Response, next: NextFunc
     if (isBlacklisted) {
       await redisService.deleteRefreshToken(decodedToken.id)
       throw new AppError(
-        MESSAGES.ERROR.TOKEN_NOT_FOUND_REVOKED,
+        ERRORS.TOKEN.NOT_FOUND_REVOKED,
         HttpStatus.UNAUTHORIZED,
         ErrorSeverity.LOW,
         { functionName: 'validateToken' }
@@ -76,29 +77,20 @@ export const validateRoles =
   (roles: Role[]) => async (req: Request, _res: Response, next: NextFunction) => {
     try {
       if (!req.user?.id)
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'findUserById' }
-        )
+        throw new AppError(ERRORS.UTIL.notFound('User'), HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'findUserById',
+        })
 
       const user = await userRepository.findUserById(req.user.id)
       if (!user)
-        throw new AppError(
-          MESSAGES.ERROR.notFound('User'),
-          HttpStatus.NOT_FOUND,
-          ErrorSeverity.LOW,
-          { functionName: 'findUserById' }
-        )
+        throw new AppError(ERRORS.UTIL.notFound('User'), HttpStatus.NOT_FOUND, ErrorSeverity.LOW, {
+          functionName: 'findUserById',
+        })
 
       if (!Array.from(user.role).some((role) => roles.includes(role))) {
-        throw new AppError(
-          MESSAGES.ERROR.UNAUTHORIZED_ACCESS,
-          HttpStatus.UNAUTHORIZED,
-          ErrorSeverity.LOW,
-          { functionName: 'validateRoles' }
-        )
+        throw new AppError(ERRORS.SYSTEM.UNAUTHORIZED, HttpStatus.UNAUTHORIZED, ErrorSeverity.LOW, {
+          functionName: 'validateRoles',
+        })
       }
 
       next()

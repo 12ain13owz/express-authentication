@@ -1,7 +1,7 @@
 import { Request } from 'express'
 
-import { ErrorSeverity, LogLevel, LogSeverity } from '@/constants/logger.constant'
-import { InternalError } from '@/constants/message.constant'
+import { ERRORS } from '@/consts/systems/errors.const'
+import { ErrorSeverity, LogLevel, LogSeverity } from '@/consts/utils/logger.const'
 import { ErrorContext } from '@/types/error.type'
 
 import { logger } from './logger.utils'
@@ -135,7 +135,7 @@ export class ErrorFactory {
 export const logErrorWithContext = (
   error: AppError | Error,
   req: Request,
-  defaultFunctionName: string = InternalError.UNKNOWN_FUNCTION
+  defaultFunctionName: string = ERRORS.SYSTEM.UNSPECIFIED_FUNCTION
 ): void => {
   ErrorLogger.log(error, {
     functionName: error instanceof AppError ? error.context?.functionName : defaultFunctionName,

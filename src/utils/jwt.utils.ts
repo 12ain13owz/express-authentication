@@ -2,9 +2,10 @@ import { User } from '@prisma/client'
 import { sign, verify } from 'jsonwebtoken'
 
 import { config } from '@/config'
-import { TokenKey } from '@/constants/jwt.constant'
-import { ErrorSeverity } from '@/constants/logger.constant'
-import { HttpStatus, MESSAGES } from '@/constants/message.constant'
+import { ERRORS } from '@/consts/systems/errors.const'
+import { HttpStatus } from '@/consts/systems/http-status.const'
+import { TokenKey } from '@/consts/utils/jwt.const'
+import { ErrorSeverity } from '@/consts/utils/logger.const'
 import { JwtPayload } from '@/types/generic.type'
 
 import { AppError } from './error-handling.utils'
@@ -36,20 +37,20 @@ export function verifyToken(token: string, tokenKey: TokenKey): JwtPayload | App
   } catch (error) {
     const e = error as Error
     if (e.name === 'TokenExpiredError')
-      throw new AppError(MESSAGES.ERROR.TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED, ErrorSeverity.LOW, {
+      throw new AppError(ERRORS.TOKEN.EXPIRED, HttpStatus.UNAUTHORIZED, ErrorSeverity.LOW, {
         functionName: 'VerifyToken',
       })
 
     if (e.name === 'JsonWebTokenError' && e.message === 'invalid signature')
       throw new AppError(
-        MESSAGES.ERROR.TOKEN_INVALID_SIGNATURE,
+        ERRORS.TOKEN.INVALID_SIGNATURE,
         HttpStatus.UNAUTHORIZED,
         ErrorSeverity.LOW,
         { functionName: 'VerifyToken' }
       )
 
     const appError = new AppError(
-      MESSAGES.ERROR.TOKEN_VERIFICATION_FAILED,
+      ERRORS.TOKEN.VERIFICATION_FAILED,
       HttpStatus.UNAUTHORIZED,
       ErrorSeverity.LOW,
       { functionName: 'VerifyToken' }

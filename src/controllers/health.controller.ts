@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 
-import { ErrorSeverity } from '@/constants/logger.constant'
-import { HttpStatus, MESSAGES } from '@/constants/message.constant'
+import { HttpStatus } from '@/consts/systems/http-status.const'
+import { SUCCESS } from '@/consts/systems/success.const'
+import { ErrorSeverity } from '@/consts/utils/logger.const'
 import { AppError } from '@/utils/error-handling.utils'
 import { createResponse } from '@/utils/generic.utils'
 
@@ -11,7 +12,7 @@ export const successController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const response = createResponse(MESSAGES.SUCCESS.OK)
+    const response = createResponse(SUCCESS.GENERIC.OK)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
     next(error)
